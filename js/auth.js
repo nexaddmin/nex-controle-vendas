@@ -7,5 +7,17 @@ function login() {
         return;
     }
 
-    alert("Login OK!\nUsuário: " + usuario);
+    // ADMIN
+    if (usuario === "admin" && senha === "1234") {
+        window.location.href = "admin.html";
+        return;
+    }
+
+    // CLIENTE
+    if (senha === "1234") {
+        window.location.href = "dashboard.html";
+        return;
+    }
+
+    alert("Usuário ou senha inválidos");
 }
