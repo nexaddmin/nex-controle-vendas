@@ -1,11 +1,11 @@
 function login() {
-    const email = document.getElementById("email").value;
+    const usuario = document.getElementById("usuario").value;
     const senha = document.getElementById("senha").value;
 
-    if (!email || !senha) {
-        alert("Preencha email e senha");
+    if (!usuario || !senha) {
+        alert("Informe usuário e senha");
         return;
     }
 
-    alert("Login clicado com sucesso!\nEmail: " + email);
+    alert("Login OK!\nUsuário: " + usuario);
 }
