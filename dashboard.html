@@ -4,41 +4,80 @@
     <meta charset="UTF-8">
     <title>Dashboard – Nex</title>
 
+    <!-- Fonte Literata -->
+    <link href="https://fonts.googleapis.com/css2?family=Literata:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            padding: 30px;
+            margin: 0;
+            font-family: 'Literata', serif;
+            background: #dadadd;
+            color: #333;
         }
 
         header {
+            background: #65889d;
+            color: #fff;
+            padding: 20px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
         }
 
-        h1 {
+        header h1 {
             margin: 0;
+            font-weight: 400;
+            font-size: 22px;
         }
 
         button {
-            padding: 8px 14px;
-            background: #e53935;
+            background: #0d5884;
             color: #fff;
             border: none;
-            cursor: pointer;
+            padding: 8px 16px;
             border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Literata', serif;
         }
 
         button:hover {
-            background: #c62828;
+            opacity: 0.9;
         }
 
-        .box {
-            background: #fff;
-            padding: 20px;
+        main {
+            padding: 30px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #ffffff;
             border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-weight: 400;
+            font-size: 16px;
+            color: #0d5884;
+        }
+
+        .card p {
+            font-size: 22px;
+            margin: 10px 0 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: #555;
         }
     </style>
 </head>
@@ -47,21 +86,38 @@
     <!-- PROTEÇÃO -->
     <script>
         const tipoUsuario = localStorage.getItem("tipoUsuario");
-
         if (tipoUsuario !== "cliente") {
             window.location.href = "index.html";
         }
     </script>
 
     <header>
-        <h1>Dashboard – Cliente</h1>
+        <h1>Meu Financeiro — Nex</h1>
         <button onclick="logout()">Sair</button>
     </header>
 
-    <div class="box">
-        <p>Bem-vindo ao seu painel financeiro.</p>
-        <p>Aqui você vai acompanhar vendas, entradas e resultados.</p>
-    </div>
+    <main>
+        <div class="cards">
+            <div class="card">
+                <h3>Entradas do mês</h3>
+                <p>R$ 0,00</p>
+            </div>
+
+            <div class="card">
+                <h3>Saídas do mês</h3>
+                <p>R$ 0,00</p>
+            </div>
+
+            <div class="card">
+                <h3>Resultado</h3>
+                <p>R$ 0,00</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Nex Admin & Financeiro © 2026
+    </footer>
 
     <script>
         function logout() {
