@@ -9,12 +9,14 @@ function login() {
 
     // ADMIN
     if (usuario === "admin" && senha === "1234") {
+        localStorage.setItem("tipoUsuario", "admin");
         window.location.href = "admin.html";
         return;
     }
 
     // CLIENTE
     if (senha === "1234") {
+        localStorage.setItem("tipoUsuario", "cliente");
         window.location.href = "dashboard.html";
         return;
     }
