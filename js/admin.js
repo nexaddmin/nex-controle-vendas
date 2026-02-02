@@ -1,1 +1,74 @@
-console.log("admin.js carregado");
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Admin – Nex</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        button {
+            padding: 8px 14px;
+            background: #e53935;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #c62828;
+        }
+
+        .box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PROTEÇÃO -->
+    <script>
+        const tipoUsuario = localStorage.getItem("tipoUsuario");
+
+        if (tipoUsuario !== "admin") {
+            window.location.href = "index.html";
+        }
+    </script>
+
+    <header>
+        <h1>Administração – Nex</h1>
+        <button onclick="logout()">Sair</button>
+    </header>
+
+    <div class="box">
+        <p>Bem-vindo, administrador.</p>
+        <p>Aqui você vai cadastrar clientes, acompanhar dados e configurar regras.</p>
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+    </script>
+
+</body>
+</html>
