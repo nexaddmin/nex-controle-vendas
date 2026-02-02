@@ -40,10 +40,6 @@
             font-family: 'Literata', serif;
         }
 
-        button:hover {
-            opacity: 0.9;
-        }
-
         main {
             padding: 30px;
         }
@@ -68,11 +64,6 @@
             color: #0d5884;
         }
 
-        .card p {
-            font-size: 15px;
-            line-height: 1.5;
-        }
-
         footer {
             text-align: center;
             padding: 20px;
@@ -82,14 +73,6 @@
     </style>
 </head>
 <body>
-
-    <!-- PROTEÇÃO -->
-    <script>
-        const tipoUsuario = localStorage.getItem("tipoUsuario");
-        if (tipoUsuario !== "admin") {
-            window.location.href = "index.html";
-        }
-    </script>
 
     <header>
         <h1>Administração — Nex</h1>
@@ -104,11 +87,6 @@
             </div>
 
             <div class="card">
-                <h3>Movimentações do mês</h3>
-                <p>Sem dados</p>
-            </div>
-
-            <div class="card">
                 <h3>Status do sistema</h3>
                 <p>Operando normalmente</p>
             </div>
@@ -119,7 +97,17 @@
         Nex Admin & Financeiro © 2026
     </footer>
 
+    <!-- PROTEÇÃO + LOGOUT -->
     <script>
+        const tipoUsuario = localStorage.getItem("tipoUsuario");
+
+        // DEBUG (pode apagar depois)
+        console.log("tipoUsuario:", tipoUsuario);
+
+        if (tipoUsuario !== "admin") {
+            window.location.href = "index.html";
+        }
+
         function logout() {
             localStorage.clear();
             window.location.href = "index.html";
