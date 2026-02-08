@@ -1,14 +1,28 @@
 // js/admin.js
-// Proteção da página admin
 
 document.addEventListener("DOMContentLoaded", function () {
-  const tipoUsuario = localStorage.getItem("tipoUsuario");
+  const tipo = localStorage.getItem("tipoUsuario");
 
-  if (tipoUsuario !== "admin") {
+  if (tipo !== "admin") {
     alert("Acesso não autorizado");
     window.location.href = "index.html";
     return;
   }
 
-  console.log("Admin autorizado e página carregada");
+  const clientes = [
+    "cinza",
+    "marrom",
+    "vermelho",
+    "verde",
+    "laranja",
+    "branco"
+  ];
+
+  const lista = document.getElementById("listaClientes");
+
+  clientes.forEach(cliente => {
+    const li = document.createElement("li");
+    li.textContent = cliente;
+    lista.appendChild(li);
+  });
 });
