@@ -1,30 +1,37 @@
 // js/auth.js
-// Script exclusivo do login
 
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("loginForm");
-
-  // Se não existir formulário de login, não faz nada
   if (!form) return;
+
+  // base simples de clientes
+  const clientes = {
+    cinza: "1356",
+    marrom: "9732",
+    vermelho: "4561",
+    verde: "7854",
+    laranja: "3826",
+    branco: "8630"
+  };
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const usuario = document.getElementById("usuario").value;
+    const usuario = document.getElementById("usuario").value.toLowerCase();
     const senha = document.getElementById("senha").value;
 
     // ADMIN
     if (usuario === "admin" && senha === "143103") {
-      localStorage.setItem("usuarioLogado", "admin");
       localStorage.setItem("tipoUsuario", "admin");
+      localStorage.setItem("usuarioLogado", "admin");
       window.location.href = "admin.html";
       return;
     }
 
-    // CLIENTE
-    if (usuario === "cliente" && senha === "143103") {
-      localStorage.setItem("usuarioLogado", "cliente");
+    // CLIENTES
+    if (clientes[usuario] && clientes[usuario] === senha) {
       localStorage.setItem("tipoUsuario", "cliente");
+      localStorage.setItem("usuarioLogado", usuario);
       window.location.href = "dashboard.html";
       return;
     }
