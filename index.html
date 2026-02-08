@@ -3,19 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <title>Login – Nex Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
 
-  <h2>Login Nex</h2>
+  <h2>Login Nex Admin</h2>
 
   <form id="loginForm">
-    <input type="text" id="usuario" placeholder="Usuário" required>
-    <br><br>
-    <input type="password" id="senha" placeholder="Senha" required>
-    <br><br>
+    <div>
+      <input
+        type="text"
+        id="usuario"
+        placeholder="Usuário"
+        autocomplete="username"
+        required
+      >
+    </div>
+
+    <br>
+
+    <div>
+      <input
+        type="password"
+        id="senha"
+        placeholder="Senha"
+        autocomplete="current-password"
+        required
+      >
+    </div>
+
+    <br>
+
     <button type="submit">Entrar</button>
   </form>
 
+  <!-- IMPORTANTE: auth.js só existe aqui -->
   <script src="js/auth.js"></script>
+
 </body>
 </html>
