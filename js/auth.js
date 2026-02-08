@@ -1,12 +1,11 @@
 // js/auth.js
+// Script exclusivo do login
 
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("loginForm");
 
-  if (!form) {
-    console.error("Formulário de login não encontrado");
-    return;
-  }
+  // Se não existir formulário de login, não faz nada
+  if (!form) return;
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -14,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const usuario = document.getElementById("usuario").value;
     const senha = document.getElementById("senha").value;
 
+    // ADMIN
     if (usuario === "admin" && senha === "143103") {
       localStorage.setItem("usuarioLogado", "admin");
       localStorage.setItem("tipoUsuario", "admin");
@@ -21,10 +21,11 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    // CLIENTE
     if (usuario === "cliente" && senha === "143103") {
       localStorage.setItem("usuarioLogado", "cliente");
       localStorage.setItem("tipoUsuario", "cliente");
-      window.location.href = "cliente.html";
+      window.location.href = "dashboard.html";
       return;
     }
 
