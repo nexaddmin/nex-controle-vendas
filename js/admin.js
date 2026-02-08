@@ -1,28 +1,45 @@
-// js/admin.js
+document.addEventListener("DOMContentLoaded", () => {
 
-document.addEventListener("DOMContentLoaded", function () {
-  const tipo = localStorage.getItem("tipoUsuario");
+  const btnSalvar = document.getElementById("btnSalvarEntrada");
+  const lista = document.getElementById("listaEntradas");
 
-  if (tipo !== "admin") {
-    alert("Acesso não autorizado");
-    window.location.href = "index.html";
-    return;
+  if (!btnSalvar || !lista) return;
+
+  function carregarEntradas() {
+    lista.innerHTML = "";
+    const entradas = JSON.parse(localStorage.getItem("entradasCNPJ")) || [];
+
+    entradas.forEach((e) => {
+      const li = document.createElement("li");
+      li.textContent = `${e.data} — ${e.descricao} — R$ ${e.valor}`;
+      lista.appendChild(li);
+    });
   }
 
-  const clientes = [
-    "cinza",
-    "marrom",
-    "vermelho",
-    "verde",
-    "laranja",
-    "branco"
-  ];
+  btnSalvar.addEventListener("click", () => {
+    const descricao = document.getElementById("entradaDescricao").value;
+    const valor = document.getElementById("entradaValor").value;
 
-  const lista = document.getElementById("listaClientes");
+    if (!descricao || !valor) {
+      alert("Preencha todos os campos");
+      return;
+    }
 
-  clientes.forEach(cliente => {
-    const li = document.createElement("li");
-    li.textContent = cliente;
-    lista.appendChild(li);
+    const entradas = JSON.parse(localStorage.getItem("entradasCNPJ")) || [];
+
+    entradas.push({
+      descricao,
+      valor,
+      data: new Date().toLocaleDateString("pt-BR")
+    });
+
+    localStorage.setItem("entradasCNPJ", JSON.stringify(entradas));
+
+    document.getElementById("entradaDescricao").value = "";
+    document.getElementById("entradaValor").value = "";
+
+    carregarEntradas();
   });
+
+  carregarEntradas();
 });
