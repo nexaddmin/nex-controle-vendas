@@ -1,45 +1,54 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const btnSalvar = document.getElementById("btnSalvarEntrada");
-  const lista = document.getElementById("listaEntradas");
+  /* ===== BOTÕES MENU ===== */
+  const btnClientes = document.getElementById("btnClientes");
+  const btnEntradas = document.getElementById("btnEntradas");
 
-  if (!btnSalvar || !lista) return;
+  const clientesSection = document.getElementById("clientesSection");
+  const entradasSection = document.getElementById("entradasSection");
 
-  function carregarEntradas() {
-    lista.innerHTML = "";
-    const entradas = JSON.parse(localStorage.getItem("entradasCNPJ")) || [];
+  /* ===== LISTA DE CLIENTES ===== */
+  const listaClientes = document.getElementById("listaClientes");
 
-    entradas.forEach((e) => {
-      const li = document.createElement("li");
-      li.textContent = `${e.data} — ${e.descricao} — R$ ${e.valor}`;
-      lista.appendChild(li);
+  const clientes = [
+    { nome: "Cinza", senha: "1356" },
+    { nome: "Marrom", senha: "9732" },
+    { nome: "Vermelho", senha: "4561" },
+    { nome: "Verde", senha: "7854" },
+    { nome: "Laranja", senha: "3826" },
+    { nome: "Branco", senha: "8630" }
+  ];
+
+  function carregarClientes() {
+    if (!listaClientes) return;
+
+    listaClientes.innerHTML = "";
+
+    clientes.forEach(cliente => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.textContent = cliente.nome;
+
+      div.addEventListener("click", () => {
+        alert(`Cliente selecionado: ${cliente.nome}`);
+        // depois: abrir dashboard do cliente
+      });
+
+      listaClientes.appendChild(div);
     });
   }
 
-  btnSalvar.addEventListener("click", () => {
-    const descricao = document.getElementById("entradaDescricao").value;
-    const valor = document.getElementById("entradaValor").value;
-
-    if (!descricao || !valor) {
-      alert("Preencha todos os campos");
-      return;
-    }
-
-    const entradas = JSON.parse(localStorage.getItem("entradasCNPJ")) || [];
-
-    entradas.push({
-      descricao,
-      valor,
-      data: new Date().toLocaleDateString("pt-BR")
-    });
-
-    localStorage.setItem("entradasCNPJ", JSON.stringify(entradas));
-
-    document.getElementById("entradaDescricao").value = "";
-    document.getElementById("entradaValor").value = "";
-
-    carregarEntradas();
+  /* ===== NAVEGAÇÃO ===== */
+  btnClientes.addEventListener("click", () => {
+    clientesSection.classList.remove("hidden");
+    entradasSection.classList.add("hidden");
   });
 
-  carregarEntradas();
+  btnEntradas.addEventListener("click", () => {
+    clientesSection.classList.add("hidden");
+    entradasSection.classList.remove("hidden");
+  });
+
+  /* ===== INICIAL ===== */
+  carregarClientes();
 });
