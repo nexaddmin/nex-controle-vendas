@@ -2,7 +2,6 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
-
   if (!form) return;
 
   form.addEventListener("submit", (e) => {
@@ -12,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const senha = document.getElementById("senha").value;
 
     // LOGIN ADMIN
-    if (usuario === "admin" && senha === "1234") {
+    if (usuario === "admin" && senha === "143103") {
       localStorage.setItem("usuarioLogado", "admin");
       localStorage.setItem("tipoUsuario", "admin");
       window.location.href = "admin.html";
@@ -20,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // LOGIN CLIENTE
-    if (usuario === "cliente" && senha === "1234") {
+    if (usuario === "cliente" && senha === "143103") {
       localStorage.setItem("usuarioLogado", "cliente");
       localStorage.setItem("tipoUsuario", "cliente");
       window.location.href = "cliente.html";
