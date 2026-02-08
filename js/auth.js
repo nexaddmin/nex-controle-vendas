@@ -1,26 +1,33 @@
 // js/auth.js
 
-document.getElementById("loginForm").addEventListener("submit", function (e) {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("loginForm");
 
-  const usuario = document.getElementById("usuario").value;
-  const senha = document.getElementById("senha").value;
-
-  // ADMIN
-  if (usuario === "admin" && senha === "143103") {
-    localStorage.setItem("usuarioLogado", "admin");
-    localStorage.setItem("tipoUsuario", "admin");
-    window.location.href = "admin.html";
+  if (!form) {
+    console.error("Formulário de login não encontrado");
     return;
   }
 
-  // CLIENTE
-  if (usuario === "cliente" && senha === "143103") {
-    localStorage.setItem("usuarioLogado", "cliente");
-    localStorage.setItem("tipoUsuario", "cliente");
-    window.location.href = "cliente.html";
-    return;
-  }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-  alert("Usuário ou senha inválidos");
+    const usuario = document.getElementById("usuario").value;
+    const senha = document.getElementById("senha").value;
+
+    if (usuario === "admin" && senha === "143103") {
+      localStorage.setItem("usuarioLogado", "admin");
+      localStorage.setItem("tipoUsuario", "admin");
+      window.location.href = "admin.html";
+      return;
+    }
+
+    if (usuario === "cliente" && senha === "143103") {
+      localStorage.setItem("usuarioLogado", "cliente");
+      localStorage.setItem("tipoUsuario", "cliente");
+      window.location.href = "cliente.html";
+      return;
+    }
+
+    alert("Usuário ou senha inválidos");
+  });
 });
