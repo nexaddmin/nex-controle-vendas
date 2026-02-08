@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Admin</title>
-</head>
-<body>
+// js/admin.js
+// Proteção da página admin
 
-  <h1>PAINEL ADMIN</h1>
+document.addEventListener("DOMContentLoaded", function () {
+  const tipoUsuario = localStorage.getItem("tipoUsuario");
 
-  <script src="js/admin.js"></script>
-</body>
-</html>
+  if (tipoUsuario !== "admin") {
+    alert("Acesso não autorizado");
+    window.location.href = "index.html";
+    return;
+  }
+
+  console.log("Admin autorizado e página carregada");
+});
