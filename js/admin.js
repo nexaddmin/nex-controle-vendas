@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (novoMes !== null && novoValor !== null) {
           entradasMensais[index] = {
             mes: novoMes,
-            valor: parseFloat(novoValor)
+            valor: parseFloat(novoValor.replace(/\./g, '').replace(',', '.'))
           };
 
           salvarEntradas();
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (mes && valor) {
       entradasMensais.push({
         mes: mes,
-        valor: parseFloat(valor)
+        valor: parseFloat(valor.replace(/\./g, '').replace(',', '.'))
       });
 
       salvarEntradas();
