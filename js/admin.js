@@ -1,45 +1,104 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ===== BOTÕES MENU ===== */
-  const btnEntradas = document.getElementById("btnEntradas");
-
+  /* ===== SEÇÕES ===== */
   const clientesSection = document.getElementById("clientesSection");
   const entradasSection = document.getElementById("entradasSection");
 
-  /* ===== LISTA DE CLIENTES ===== */
+  const btnEntradas = document.getElementById("btnEntradas");
+
+  /* ===== CLIENTES ===== */
   const listaClientes = document.getElementById("listaClientes");
 
   const clientes = [
-    { nome: "Cinza", senha: "1356" },
-    { nome: "Marrom", senha: "9732" },
-    { nome: "Vermelho", senha: "4561" },
-    { nome: "Verde", senha: "7854" },
-    { nome: "Laranja", senha: "3826" },
-    { nome: "Branco", senha: "8630" }
+    { nome: "Cinza" },
+    { nome: "Marrom" },
+    { nome: "Vermelho" },
+    { nome: "Verde" },
+    { nome: "Laranja" },
+    { nome: "Branco" }
   ];
 
   function carregarClientes() {
-    if (!listaClientes) return;
-
     listaClientes.innerHTML = "";
 
     clientes.forEach(cliente => {
       const div = document.createElement("div");
       div.className = "card";
       div.textContent = cliente.nome;
-
-      div.addEventListener("click", () => {
-        alert(`Cliente selecionado: ${cliente.nome}`);
-        // depois: abrir dashboard do cliente
-      });
-
       listaClientes.appendChild(div);
     });
   }
 
-  /* ===== NAVEGAÇÃO ===== */
+  /* ===== ENTRADAS MENSAIS (CNPJ) ===== */
 
+  const btnAddMes = document.getElementById("btnAddMes");
+  const listaEntradasMensais = document.getElementById("listaEntradasMensais");
+
+  let entradasMensais = JSON.parse(localStorage.getItem("entradasCNPJ")) || [];
+
+  function salvarEntradas() {
+    localStorage.setItem("entradasCNPJ", JSON.stringify(entradasMensais));
+  }
+
+  function renderEntradas() {
+    listaEntradasMensais.innerHTML = "";
+
+    entradasMensais.forEach((item, index) => {
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const titulo = document.createElement("h3");
+      titulo.textContent = item.mes;
+
+      const valor = document.createElement("div");
+      valor.className = "valor";
+      valor.textContent = "R$ " + item.valor.toFixed(2);
+
+      const editar = document.createElement("div");
+      editar.className = "edit";
+      editar.textContent = "✏️ Editar";
+
+      editar.addEventListener("click", () => {
+        const novoMes = prompt("Editar nome do mês:", item.mes);
+        const novoValor = prompt("Editar valor:", item.valor);
+
+        if (novoMes !== null && novoValor !== null) {
+          entradasMensais[index] = {
+            mes: novoMes,
+            valor: parseFloat(novoValor)
+          };
+
+          salvarEntradas();
+          renderEntradas();
+        }
+      });
+
+      card.appendChild(titulo);
+      card.appendChild(valor);
+      card.appendChild(editar);
+
+      listaEntradasMensais.appendChild(card);
+    });
+  }
+
+  btnAddMes.addEventListener("click", () => {
+
+    const mes = prompt("Nome do mês (Ex: Janeiro / 2026)");
+    const valor = prompt("Valor total do mês:");
+
+    if (mes && valor) {
+      entradasMensais.push({
+        mes: mes,
+        valor: parseFloat(valor)
+      });
+
+      salvarEntradas();
+      renderEntradas();
+    }
   });
+
+  /* ===== NAVEGAÇÃO ===== */
 
   btnEntradas.addEventListener("click", () => {
     clientesSection.classList.add("hidden");
@@ -47,5 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ===== INICIAL ===== */
+
   carregarClientes();
+  renderEntradas();
+
 });
