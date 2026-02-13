@@ -53,7 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const valor = document.createElement("div");
       valor.className = "valor";
-      valor.textContent = "R$ " + item.valor.toFixed(2);
+      valor.textContent = item.valor.toLocaleString("pt-BR", {
+  style: "currency",
+  currency: "BRL"
+});
 
       const editar = document.createElement("div");
       editar.className = "edit";
