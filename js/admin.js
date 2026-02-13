@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== BOTÕES MENU ===== */
-  const btnClientes = document.getElementById("btnClientes");
   const btnEntradas = document.getElementById("btnEntradas");
 
   const clientesSection = document.getElementById("clientesSection");
@@ -39,9 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===== NAVEGAÇÃO ===== */
-  btnClientes.addEventListener("click", () => {
-    clientesSection.classList.remove("hidden");
-    entradasSection.classList.add("hidden");
+
   });
 
   btnEntradas.addEventListener("click", () => {
