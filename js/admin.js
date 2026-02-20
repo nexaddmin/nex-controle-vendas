@@ -104,16 +104,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== NAVEGAÇÃO ===== */
 
-  btnEntradas.addEventListener("click", () => {
-    clientesSection.classList.add("hidden");
-    entradasSection.classList.remove("hidden");
-  });
-  
-  btnClientes.addEventListener("click", () => {
+  // Mostrar Entradas
+btnEntradas.addEventListener("click", () => {
+  clientesSection.classList.add("hidden");
+  entradasSection.classList.remove("hidden");
+});
+
+// Mostrar Clientes
+btnClientes.addEventListener("click", () => {
   entradasSection.classList.add("hidden");
   clientesSection.classList.remove("hidden");
-    
-  });
+});
 
   /* ===== INICIAL ===== */
 
