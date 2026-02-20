@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const entradasSection = document.getElementById("entradasSection");
 
   const btnEntradas = document.getElementById("btnEntradas");
-
+  const btnClientes = document.getElementById("btnClientes");
+  
   /* ===== CLIENTES ===== */
   const listaClientes = document.getElementById("listaClientes");
 
@@ -24,7 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
     clientes.forEach(cliente => {
       const div = document.createElement("div");
       div.className = "card";
-      div.textContent = cliente.nome;
+     div.textContent = cliente.nome;
+
+div.addEventListener("click", () => {
+  window.location.href = "cliente.html?nome=" + cliente.nome;
+});
       listaClientes.appendChild(div);
     });
   }
@@ -103,10 +108,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== NAVEGAÇÃO ===== */
 
-  btnEntradas.addEventListener("click", () => {
-    clientesSection.classList.add("hidden");
-    entradasSection.classList.remove("hidden");
-  });
+  // Mostrar Entradas
+btnEntradas.addEventListener("click", () => {
+  clientesSection.classList.add("hidden");
+  entradasSection.classList.remove("hidden");
+});
+
+// Mostrar Clientes
+btnClientes.addEventListener("click", () => {
+  entradasSection.classList.add("hidden");
+  clientesSection.classList.remove("hidden");
+});
 
   /* ===== INICIAL ===== */
 
