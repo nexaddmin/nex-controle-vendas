@@ -32,94 +32,91 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== ENTRADAS MENSAIS (CNPJ) ===== */
 
-  const btnAddMes = document.getElementById("btnAddMes");
-  const listaEntradasMensais = document.getElementById("listaEntradasMensais");
+ let entradasMensais =
+  JSON.parse(localStorage.getItem("entradasMensais")) || [];
 
-  let entradasMensais = JSON.parse(localStorage.getItem("entradasCNPJ")) || [];
+const listaEntradas = document.getElementById("listaEntradas");
 
-  function salvarEntradas() {
-    localStorage.setItem("entradasCNPJ", JSON.stringify(entradasMensais));
-  }
 
-  function renderEntradas() {
-    listaEntradasMensais.innerHTML = "";
+function salvarLocalStorage() {
+  localStorage.setItem(
+    "entradasMensais",
+    JSON.stringify(entradasMensais)
+  );
+}
 
-    entradasMensais.forEach((item, index) => {
 
-      const card = document.createElement("div");
-      card.className = "card";
+function renderEntradas() {
+  listaEntradas.innerHTML = "";
 
-      const titulo = document.createElement("h3");
-      titulo.textContent = item.mes;
+  entradasMensais.forEach((item, index) => {
 
-      const valor = document.createElement("div");
-      valor.className = "valor";
-      valor.textContent = item.valor.toLocaleString("pt-BR", {
-  style: "currency",
-  currency: "BRL"
-});
+    const linha = document.createElement("div");
+    linha.className = "linha";
 
-      const editar = document.createElement("div");
-editar.className = "edit";
-editar.textContent = "✏️ Editar";
+    const mes = document.createElement("div");
+    mes.textContent = item.mes;
 
-editar.addEventListener("click", () => {
-  const novoMes = prompt("Editar nome do mês:", item.mes);
-  const novoValor = prompt("Editar valor:", item.valor);
-
-  if (novoMes !== null && novoValor !== null) {
-    entradasMensais[index] = {
-      mes: novoMes,
-      valor: parseFloat(
-        novoValor.replace(/\./g, '').replace(',', '.')
-      )
-    };
-
-    localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
-    renderEntradas();
-  }
-});
-
-// ===== BOTÃO DELETE =====
-
-const deletar = document.createElement("div");
-deletar.className = "delete";
-deletar.textContent = "🗑 Deletar";
-
-deletar.addEventListener("click", () => {
-  const confirmar = confirm("Tem certeza que deseja excluir esta entrada?");
-  if (!confirmar) return;
-
-  entradasMensais.splice(index, 1);
-
-  localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
-  renderEntradas();
-});
-          salvarEntradas();
-          renderEntradas();
-        }
-      });
-
-      card.appendChild(titulo);
-      card.appendChild(valor);
-      card.appendChild(editar);
-      card.appendChild(delete);
-
-      listaEntradasMensais.appendChild(card);
+    const valor = document.createElement("div");
+    valor.textContent = item.valor.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
     });
-  }
 
-  btnAddMes.addEventListener("click", () => {
+    const acoes = document.createElement("div");
+    acoes.className = "acoes";
 
-    const mes = prompt("Nome do mês (Ex: Janeiro / 2026)");
-    const valor = prompt("Valor total do mês:");
+    // ===== EDITAR =====
+    const editar = document.createElement("div");
+    editar.className = "edit";
+    editar.textContent = "✏️ Editar";
 
-    if (mes && valor) {
-      entradasMensais.push({
-        mes: mes,
-        valor: parseFloat(valor.replace(/\./g, '').replace(',', '.'))
-      });
+    editar.addEventListener("click", () => {
+      const novoMes = prompt("Editar mês:", item.mes);
+      const novoValor = prompt("Editar valor:", item.valor);
 
+      if (novoMes !== null && novoValor !== null) {
+        entradasMensais[index] = {
+          mes: novoMes,
+          valor: parseFloat(
+            novoValor.replace(/\./g, "").replace(",", ".")
+          )
+        };
+
+        salvarLocalStorage();
+        renderEntradas();
+      }
+    });
+
+    // ===== DELETAR =====
+    const deletar = document.createElement("div");
+    deletar.className = "delete";
+    deletar.textContent = "🗑 Deletar";
+
+    deletar.addEventListener("click", () => {
+      const confirmar = confirm(
+        "Tem certeza que deseja excluir?"
+      );
+      if (!confirmar) return;
+
+      entradasMensais.splice(index, 1);
+      salvarLocalStorage();
+      renderEntradas();
+    });
+
+    // adiciona botões nas ações
+    acoes.appendChild(editar);
+    acoes.appendChild(deletar);
+
+    // adiciona tudo na linha
+    linha.appendChild(mes);
+    linha.appendChild(valor);
+    linha.appendChild(acoes);
+
+    // adiciona linha na lista
+    listaEntradas.appendChild(linha);
+  });
+}
       salvarEntradas();
       renderEntradas();
     }
