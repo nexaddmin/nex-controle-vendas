@@ -64,21 +64,39 @@ div.addEventListener("click", () => {
 });
 
       const editar = document.createElement("div");
-      editar.className = "edit";
-      editar.textContent = "✏️ Editar";
+editar.className = "edit";
+editar.textContent = "✏️ Editar";
 
-      editar.addEventListener("click", () => {
-        const novoMes = prompt("Editar nome do mês:", item.mes);
-        const novoValor = prompt("Editar valor:", item.valor);
+editar.addEventListener("click", () => {
+  const novoMes = prompt("Editar nome do mês:", item.mes);
+  const novoValor = prompt("Editar valor:", item.valor);
 
-        if (novoMes !== null && novoValor !== null) {
-          entradasMensais[index] = {
-            mes: novoMes,
-            valor: parseFloat(novoValor.replace(/\./g, '').replace(',', '.'))
-          };
+  if (novoMes !== null && novoValor !== null) {
+    entradasMensais[index] = {
+      mes: novoMes,
+      valor: parseFloat(
+        novoValor.replace(/\./g, '').replace(',', '.')
+      )
+    };
 
-          salvarEntradas();
-          renderEntradas();
+    localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
+    renderEntradas();
+  }
+});
+
+const deletar = document.createElement("div");
+deletar.className = "delete";
+deletar.textContent = "🗑 Deletar";
+
+deletar.addEventListener("click", () => {
+  const confirmar = confirm("Tem certeza que deseja excluir esta entrada?");
+  if (!confirmar) return;
+
+  entradasMensais.splice(index, 1);
+
+  localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
+  renderEntradas();
+});
         }
       });
 
