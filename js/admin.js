@@ -103,6 +103,7 @@ deletar.addEventListener("click", () => {
       card.appendChild(titulo);
       card.appendChild(valor);
       card.appendChild(editar);
+      card.appendChild(delete);
 
       listaEntradasMensais.appendChild(card);
     });
