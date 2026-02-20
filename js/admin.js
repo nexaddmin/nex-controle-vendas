@@ -58,76 +58,24 @@ div.addEventListener("click", () => {
 
       const valor = document.createElement("div");
       valor.className = "valor";
-      valor.textContent = item.valor.toLocaleString("pt-BR", {
-  style: "currency",
-  currency: "BRL"
-});
+      valor.textContent = "R$ " + item.valor.toFixed(2);
 
-// ===== CONTAINER AÇÕES =====
-const acoes = document.createElement("div");
-acoes.className = "acoes";
+      const editar = document.createElement("div");
+      editar.className = "edit";
+      editar.textContent = "✏️ Editar";
 
+      editar.addEventListener("click", () => {
+        const novoMes = prompt("Editar nome do mês:", item.mes);
+        const novoValor = prompt("Editar valor:", item.valor);
 
-// ===== BOTÃO EDITAR =====
-const editar = document.createElement("div");
-editar.className = "edit";
-editar.textContent = "✏️ Editar";
+        if (novoMes !== null && novoValor !== null) {
+          entradasMensais[index] = {
+            mes: novoMes,
+            valor: parseFloat(novoValor)
+          };
 
-editar.addEventListener("click", () => {
-
-  const novoMes = prompt("Editar mês:", item.mes);
-  const novoValor = prompt("Editar valor:", item.valor);
-
-  if (novoMes !== null && novoValor !== null) {
-
-    entradasMensais[index] = {
-      mes: novoMes,
-      valor: parseFloat(
-        novoValor.replace(/\./g, "").replace(",", ".")
-      )
-    };
-
-    localStorage.setItem(
-      "entradasMensais",
-      JSON.stringify(entradasMensais)
-    );
-
-    renderEntradas();
-  }
-
-});
-
-
-// ===== BOTÃO DELETE =====
-const deletar = document.createElement("div");
-deletar.className = "delete";
-deletar.textContent = "🗑 Deletar";
-
-deletar.addEventListener("click", () => {
-
-  const confirmar = confirm(
-    "Tem certeza que deseja excluir esta entrada?"
-  );
-
-  if (!confirmar) return;
-
-  entradasMensais.splice(index, 1);
-
-  localStorage.setItem(
-    "entradasMensais",
-    JSON.stringify(entradasMensais)
-  );
-
-  renderEntradas();
-});
-
-// ===== ADICIONA BOTÕES NO CONTAINER =====
-acoes.appendChild(editar);
-acoes.appendChild(deletar);
-
-// ===== ADICIONA AÇÕES NA LINHA =====
-linha.appendChild(acoes);
-});
+          salvarEntradas();
+          renderEntradas();
         }
       });
 
@@ -147,7 +95,7 @@ linha.appendChild(acoes);
     if (mes && valor) {
       entradasMensais.push({
         mes: mes,
-        valor: parseFloat(valor.replace(/\./g, '').replace(',', '.'))
+        valor: parseFloat(valor)
       });
 
       salvarEntradas();
