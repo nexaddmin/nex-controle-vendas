@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const entradasSection = document.getElementById("entradasSection");
 
   const btnEntradas = document.getElementById("btnEntradas");
-
+  const btnClientes = document.getElementById("btnClientes");
+  
   /* ===== CLIENTES ===== */
   const listaClientes = document.getElementById("listaClientes");
 
@@ -106,6 +107,12 @@ document.addEventListener("DOMContentLoaded", () => {
   btnEntradas.addEventListener("click", () => {
     clientesSection.classList.add("hidden");
     entradasSection.classList.remove("hidden");
+  });
+  
+  btnClientes.addEventListener("click", () => {
+  entradasSection.classList.add("hidden");
+  clientesSection.classList.remove("hidden");
+    
   });
 
   /* ===== INICIAL ===== */
