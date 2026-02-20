@@ -53,7 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const valor = document.createElement("div");
       valor.className = "valor";
-      valor.textContent = "R$ " + item.valor.toFixed(2);
+      valor.textContent = item.valor.toLocaleString("pt-BR", {
+  style: "currency",
+  currency: "BRL"
+});
 
       const editar = document.createElement("div");
       editar.className = "edit";
@@ -66,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (novoMes !== null && novoValor !== null) {
           entradasMensais[index] = {
             mes: novoMes,
-            valor: parseFloat(novoValor)
+            valor: parseFloat(novoValor.replace(/\./g, '').replace(',', '.'))
           };
 
           salvarEntradas();
@@ -90,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (mes && valor) {
       entradasMensais.push({
         mes: mes,
-        valor: parseFloat(valor)
+        valor: parseFloat(valor.replace(/\./g, '').replace(',', '.'))
       });
 
       salvarEntradas();
