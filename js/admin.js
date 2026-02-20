@@ -63,39 +63,70 @@ div.addEventListener("click", () => {
   currency: "BRL"
 });
 
-      const editar = document.createElement("div");
+// ===== CONTAINER AÇÕES =====
+const acoes = document.createElement("div");
+acoes.className = "acoes";
+
+
+// ===== BOTÃO EDITAR =====
+const editar = document.createElement("div");
 editar.className = "edit";
 editar.textContent = "✏️ Editar";
 
 editar.addEventListener("click", () => {
-  const novoMes = prompt("Editar nome do mês:", item.mes);
+
+  const novoMes = prompt("Editar mês:", item.mes);
   const novoValor = prompt("Editar valor:", item.valor);
 
   if (novoMes !== null && novoValor !== null) {
+
     entradasMensais[index] = {
       mes: novoMes,
       valor: parseFloat(
-        novoValor.replace(/\./g, '').replace(',', '.')
+        novoValor.replace(/\./g, "").replace(",", ".")
       )
     };
 
-    localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
+    localStorage.setItem(
+      "entradasMensais",
+      JSON.stringify(entradasMensais)
+    );
+
     renderEntradas();
   }
+
 });
 
+
+// ===== BOTÃO DELETE =====
 const deletar = document.createElement("div");
 deletar.className = "delete";
 deletar.textContent = "🗑 Deletar";
 
 deletar.addEventListener("click", () => {
-  const confirmar = confirm("Tem certeza que deseja excluir esta entrada?");
+
+  const confirmar = confirm(
+    "Tem certeza que deseja excluir esta entrada?"
+  );
+
   if (!confirmar) return;
 
   entradasMensais.splice(index, 1);
 
-  localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
+  localStorage.setItem(
+    "entradasMensais",
+    JSON.stringify(entradasMensais)
+  );
+
   renderEntradas();
+});
+
+// ===== ADICIONA BOTÕES NO CONTAINER =====
+acoes.appendChild(editar);
+acoes.appendChild(deletar);
+
+// ===== ADICIONA AÇÕES NA LINHA =====
+linha.appendChild(acoes);
 });
         }
       });
