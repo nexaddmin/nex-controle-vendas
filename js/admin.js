@@ -5,8 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const entradasSection = document.getElementById("entradasSection");
 
   const btnEntradas = document.getElementById("btnEntradas");
-  const btnClientes = document.getElementById("btnClientes");
-  
+
   /* ===== CLIENTES ===== */
   const listaClientes = document.getElementById("listaClientes");
 
@@ -32,91 +31,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== ENTRADAS MENSAIS (CNPJ) ===== */
 
- let entradasMensais =
-  JSON.parse(localStorage.getItem("entradasMensais")) || [];
+  const btnAddMes = document.getElementById("btnAddMes");
+  const listaEntradasMensais = document.getElementById("listaEntradasMensais");
 
-const listaEntradas = document.getElementById("listaEntradas");
+  let entradasMensais = JSON.parse(localStorage.getItem("entradasCNPJ")) || [];
 
+  function salvarEntradas() {
+    localStorage.setItem("entradasCNPJ", JSON.stringify(entradasMensais));
+  }
 
-function salvarLocalStorage() {
-  localStorage.setItem(
-    "entradasMensais",
-    JSON.stringify(entradasMensais)
-  );
-}
+  function renderEntradas() {
+    listaEntradasMensais.innerHTML = "";
 
+    entradasMensais.forEach((item, index) => {
 
-function renderEntradas() {
-  listaEntradas.innerHTML = "";
+      const card = document.createElement("div");
+      card.className = "card";
 
-  entradasMensais.forEach((item, index) => {
+      const titulo = document.createElement("h3");
+      titulo.textContent = item.mes;
 
-    const linha = document.createElement("div");
-    linha.className = "linha";
+      const valor = document.createElement("div");
+      valor.className = "valor";
+      valor.textContent = "R$ " + item.valor.toFixed(2);
 
-    const mes = document.createElement("div");
-    mes.textContent = item.mes;
+      const editar = document.createElement("div");
+      editar.className = "edit";
+      editar.textContent = "✏️ Editar";
 
-    const valor = document.createElement("div");
-    valor.textContent = item.valor.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL"
+      editar.addEventListener("click", () => {
+        const novoMes = prompt("Editar nome do mês:", item.mes);
+        const novoValor = prompt("Editar valor:", item.valor);
+
+        if (novoMes !== null && novoValor !== null) {
+          entradasMensais[index] = {
+            mes: novoMes,
+            valor: parseFloat(novoValor)
+          };
+
+          salvarEntradas();
+          renderEntradas();
+        }
+      });
+
+      card.appendChild(titulo);
+      card.appendChild(valor);
+      card.appendChild(editar);
+
+      listaEntradasMensais.appendChild(card);
     });
+  }
 
-    const acoes = document.createElement("div");
-    acoes.className = "acoes";
+  btnAddMes.addEventListener("click", () => {
 
-    // ===== EDITAR =====
-    const editar = document.createElement("div");
-    editar.className = "edit";
-    editar.textContent = "✏️ Editar";
+    const mes = prompt("Nome do mês (Ex: Janeiro / 2026)");
+    const valor = prompt("Valor total do mês:");
 
-    editar.addEventListener("click", () => {
-      const novoMes = prompt("Editar mês:", item.mes);
-      const novoValor = prompt("Editar valor:", item.valor);
+    if (mes && valor) {
+      entradasMensais.push({
+        mes: mes,
+        valor: parseFloat(valor)
+      });
 
-      if (novoMes !== null && novoValor !== null) {
-        entradasMensais[index] = {
-          mes: novoMes,
-          valor: parseFloat(
-            novoValor.replace(/\./g, "").replace(",", ".")
-          )
-        };
-
-        salvarLocalStorage();
-        renderEntradas();
-      }
-    });
-
-    // ===== DELETAR =====
-    const deletar = document.createElement("div");
-    deletar.className = "delete";
-    deletar.textContent = "🗑 Deletar";
-
-    deletar.addEventListener("click", () => {
-      const confirmar = confirm(
-        "Tem certeza que deseja excluir?"
-      );
-      if (!confirmar) return;
-
-      entradasMensais.splice(index, 1);
-      salvarLocalStorage();
-      renderEntradas();
-    });
-
-    // adiciona botões nas ações
-    acoes.appendChild(editar);
-    acoes.appendChild(deletar);
-
-    // adiciona tudo na linha
-    linha.appendChild(mes);
-    linha.appendChild(valor);
-    linha.appendChild(acoes);
-
-    // adiciona linha na lista
-    listaEntradas.appendChild(linha);
-  });
-}
       salvarEntradas();
       renderEntradas();
     }
@@ -124,17 +100,10 @@ function renderEntradas() {
 
   /* ===== NAVEGAÇÃO ===== */
 
-  // Mostrar Entradas
-btnEntradas.addEventListener("click", () => {
-  clientesSection.classList.add("hidden");
-  entradasSection.classList.remove("hidden");
-});
-
-// Mostrar Clientes
-btnClientes.addEventListener("click", () => {
-  entradasSection.classList.add("hidden");
-  clientesSection.classList.remove("hidden");
-});
+  btnEntradas.addEventListener("click", () => {
+    clientesSection.classList.add("hidden");
+    entradasSection.classList.remove("hidden");
+  });
 
   /* ===== INICIAL ===== */
 
