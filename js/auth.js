@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (clientes[usuario] && clientes[usuario] === senha) {
       localStorage.setItem("tipoUsuario", "cliente");
       localStorage.setItem("usuarioLogado", usuario);
-      window.location.href = "dashboard.html";
+      window.location.href = "cliente.html";
       return;
     }
 
