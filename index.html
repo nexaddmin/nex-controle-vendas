@@ -10,38 +10,16 @@
 
 <body class="login-body">
 
-  <h2>Login Nex Admin</h2>
+  <div class="login-container">
+    <h2>Login Nex Admin</h2>
 
-  <form id="loginForm">
-    <div>
-      <input
-        type="text"
-        id="usuario"
-        placeholder="Usuário"
-        autocomplete="username"
-        required
-      >
-    </div>
+    <form id="loginForm">
+      <input type="text" id="usuario" placeholder="Usuário" required>
+      <input type="password" id="senha" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
 
-    <br>
-
-    <div>
-      <input
-        type="password"
-        id="senha"
-        placeholder="Senha"
-        autocomplete="current-password"
-        required
-      >
-    </div>
-
-    <br>
-
-    <button type="submit">Entrar</button>
-  </form>
-
-  <!-- IMPORTANTE: auth.js só existe aqui -->
   <script src="js/auth.js"></script>
-
 </body>
 </html>
