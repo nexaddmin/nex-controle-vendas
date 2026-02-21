@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "Verde": "7854",
     "Laranja": "3826",
     "Branco": "8630",
-    "admin": "9999"
+    "admin": "9999" // senha do admin
   };
 
   btnLogin.addEventListener("click", () => {
