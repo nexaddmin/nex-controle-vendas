@@ -1,17 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
-  
-const usuario = localStorage.getItem("usuarioLogado");
 
-if (usuario !== "admin") {
-  window.location.href = "login.html";
-}
+  const tipo = localStorage.getItem("tipoUsuario");
+  const usuario = localStorage.getItem("usuarioLogado");
+
+  // 🔒 PROTEÇÃO ADMIN
+  if (tipo !== "admin" || usuario !== "admin") {
+    window.location.href = "index.html";
+    return;
+  }
+
   // 🔴 LOGOUT
-const btnLogout = document.getElementById("btnLogout");
+  const btnLogout = document.getElementById("btnLogout");
 
-btnLogout.addEventListener("click", () => {
-  localStorage.removeItem("usuarioLogado");
-  window.location.href = "login.html";
-});
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "index.html";
+    });
+  }
   
   /* ===== SEÇÕES ===== */
   const clientesSection = document.getElementById("clientesSection");
