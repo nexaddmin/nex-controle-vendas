@@ -1,5 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  const tipo = localStorage.getItem("tipoUsuario");
+  const nome = localStorage.getItem("usuarioLogado");
+
+  // 🔒 BLOQUEIO TOTAL
+  if (tipo !== "cliente" || !nome) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  document.getElementById("nomeCliente").textContent = "Cliente: " + nome;
+  
   // 👤 pegar usuário logado
   const nome = localStorage.getItem("usuarioLogado");
   const tipo = localStorage.getItem("tipoUsuario");
