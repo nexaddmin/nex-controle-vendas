@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
      div.textContent = cliente.nome;
 
 div.addEventListener("click", () => {
-  window.location.href = "cliente.html?nome=" + cliente.nome;
+  window.location.href = "cliente-admin.html?nome=" + cliente.nome;
 });
       listaClientes.appendChild(div);
     });
