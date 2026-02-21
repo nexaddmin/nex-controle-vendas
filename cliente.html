@@ -17,12 +17,32 @@
   </div>
 </header>
   
-<main>
-  <div class="top-bar">
-    <h2>Entradas do Cliente</h2>
-    <button class="btn-add" id="btnAddEntrada">+</button>
-  </div>
+<main class="cliente-main">
 
+  <!-- FORMULÁRIO (fica escondido até clicar no +) -->
+  <section id="formEntrada" class="form-entrada hidden">
+    <div class="form-row">
+      <label for="descEntrada">Descrição</label>
+      <input id="descEntrada" type="text" placeholder="Ex: Venda balcão" />
+    </div>
+
+    <div class="form-row">
+      <label for="qtdEntrada">Quantidade</label>
+      <input id="qtdEntrada" type="number" min="1" placeholder="1" />
+    </div>
+
+    <div class="form-row">
+      <label for="valorEntrada">Valor (R$)</label>
+      <input id="valorEntrada" type="text" placeholder="Ex: 35,90" />
+    </div>
+
+    <div class="form-actions">
+      <button id="btnSalvarEntrada" class="btn-primary">Salvar</button>
+      <button id="btnCancelarEntrada" class="btn-secondary">Cancelar</button>
+    </div>
+  </section>
+
+  <!-- LISTA -->
   <div class="cards" id="listaEntradasCliente"></div>
 </main>
 
