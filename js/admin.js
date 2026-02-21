@@ -48,34 +48,56 @@ div.addEventListener("click", () => {
   function renderEntradas() {
     listaEntradasMensais.innerHTML = "";
 
-    entradasMensais.forEach((item, index) => {
+entradasMensais.forEach((item, index) => {
 
-      const card = document.createElement("div");
-      card.className = "card";
+  const linha = document.createElement("div");
 
-      const titulo = document.createElement("h3");
-      titulo.textContent = item.mes;
+  const acoes = document.createElement("div");
 
-      const valor = document.createElement("div");
-      valor.className = "valor";
-      valor.textContent = "R$ " + item.valor.toFixed(2);
+  // ===== BOTÃO EDITAR =====
+  const editar = document.createElement("div");
+  editar.className = "edit";
+  editar.textContent = "✏️ Editar";
 
-      const editar = document.createElement("div");
-      editar.className = "edit";
-      editar.textContent = "✏️ Editar";
+  editar.addEventListener("click", () => {
+    const novoMes = prompt("Editar nome do mês:", item.mes);
+    const novoValor = prompt("Editar valor:", item.valor);
 
-      editar.addEventListener("click", () => {
-        const novoMes = prompt("Editar nome do mês:", item.mes);
-        const novoValor = prompt("Editar valor:", item.valor);
+    if (novoMes !== null && novoValor !== null) {
+      entradasMensais[index] = {
+        mes: novoMes,
+        valor: parseFloat(
+          novoValor.replace(/\./g, '').replace(',', '.')
+        )
+      };
 
-        if (novoMes !== null && novoValor !== null) {
-          entradasMensais[index] = {
-            mes: novoMes,
-            valor: parseFloat(novoValor)
-          };
+      localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
+      renderEntradas();
+    }
+  });
 
-          salvarEntradas();
-          renderEntradas();
+  // ===== BOTÃO DELETE =====
+  const deletar = document.createElement("div");
+  deletar.className = "delete";
+  deletar.textContent = "🗑 Deletar";
+
+  deletar.addEventListener("click", () => {
+    const confirmar = confirm("Tem certeza que deseja excluir?");
+    if (!confirmar) return;
+
+    entradasMensais.splice(index, 1);
+
+    localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
+    renderEntradas();
+  });
+
+  // 🔥 AQUI É ONDE ENTRA O appendChild
+  acoes.appendChild(editar);
+  acoes.appendChild(deletar);
+
+  linha.appendChild(acoes);
+  }
+});
         }
       });
 
