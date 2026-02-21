@@ -75,122 +75,172 @@ body.login-body {
   text-decoration: underline;
 }
 
-/* ===== CLIENTE (ÁREA DO CLIENTE) ===== */
+/* ===== CLIENTE ===== */
 
-:root{
-  --azul-principal:#65889d;
-  --azul-escuro:#0d5884;
-  --cinza-fundo:#dadadd;
-  --card:#ffffff;
-}
+.hidden { display: none; }
 
-body:not(.login-body){
-  background: var(--cinza-fundo);
-}
-
-/* Header do cliente */
-header{
-  background: var(--azul-escuro);
+.cliente-header{
+  height: 64px;
+  padding: 0 16px;
+  background: #0d5884;
   color: #fff;
-  padding: 16px 20px;
-  border-bottom: 4px solid var(--azul-principal);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 4px solid #65889d;
 }
 
-header h1{
-  font-size: 18px;
+.cliente-nome{
   font-weight: 700;
+  font-size: 16px;
 }
 
-/* Deixa os botões do header alinhados e bonitos */
-header .header-actions{
+.cliente-acoes{
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
-/* Se você ainda não tem essa div no HTML, tudo bem.
-   O CSS abaixo também melhora os botões em geral no header */
-header button{
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.22);
+.btn-add{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 0;
+  background: #65889d;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.btn-logout{
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.10);
   color: #fff;
   padding: 10px 12px;
-  border-radius: 10px;
+  cursor: pointer;
 }
 
-header button:hover{
-  opacity: 1;
-  background: rgba(255,255,255,0.18);
-}
+.btn-logout:hover{ background: rgba(255,255,255,0.16); }
 
-/* Conteúdo */
-main{
+.cliente-main{
   max-width: 980px;
   margin: 0 auto;
-  padding: 18px;
+  padding: 16px;
 }
 
-/* Top bar */
-.top-bar{
-  background: rgba(255,255,255,0.6);
-  border: 1px solid rgba(0,0,0,0.06);
+.form-entrada{
+  background: rgba(255,255,255,0.95);
+  border: 1px solid rgba(0,0,0,0.08);
   border-radius: 14px;
-  padding: 14px 16px;
-  margin-bottom: 16px;
+  padding: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  margin-bottom: 14px;
 }
 
-.top-bar h2{
-  font-size: 18px;
-  color: #111827;
+.form-row{
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-/* Botão + (se existir na página do cliente, dá pra esconder também) */
-.btn-add{
-  background: var(--azul-principal);
-  border: none;
-  border-radius: 12px;
+.form-row label{
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.form-row input{
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cfd6dd;
+  border-radius: 10px;
+  outline: none;
+}
+
+.form-row input:focus{
+  border-color: #65889d;
+}
+
+.form-actions{
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.btn-primary{
+  background: #0d5884;
+  color: #fff;
+  border: 0;
   padding: 10px 14px;
-  font-size: 18px;
-}
-.btn-add:hover{
-  opacity: 0.95;
+  border-radius: 12px;
+  cursor: pointer;
 }
 
-/* Grid dos cards */
+.btn-secondary{
+  background: #e5e7eb;
+  color: #111827;
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
 .cards{
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
-/* Card */
 .card{
-  background: var(--card);
+  background: #fff;
   border-radius: 14px;
-  padding: 16px;
+  padding: 14px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   border: 1px solid rgba(0,0,0,0.06);
 }
 
-.card h3{
-  font-size: 16px;
-  margin-bottom: 8px;
+.card .linha1{
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.card .desc{
+  font-weight: 800;
   color: #0f172a;
+  font-size: 16px;
 }
 
-.card div{
-  font-size: 18px;
+.card .total{
+  font-weight: 900;
+  color: #0d5884;
+  font-size: 16px;
+}
+
+.card .detalhes{
+  margin-top: 8px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: #334155;
+  font-size: 13px;
+}
+
+.card .edit{
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #0d5884;
   font-weight: 700;
-  color: var(--azul-escuro);
 }
 
-/* Responsivo */
 @media (max-width: 720px){
-  .cards{
-    grid-template-columns: 1fr;
-  }
-  header{
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
+  .cards{ grid-template-columns: 1fr; }
+  .form-row{ grid-template-columns: 1fr; }
 }
