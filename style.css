@@ -111,3 +111,60 @@ button:hover {
     align-items: flex-start;
   }
 }
+
+/* ===== LOGIN ===== */
+
+.login-body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* IMAGEM DE FUNDO */
+  background: url("background.jpg") no-repeat center center;
+  background-size: cover;
+}
+
+.login-container {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  width: 320px;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.login-container h2 {
+  margin-bottom: 25px;
+  font-size: 24px;
+  color: #1f2937;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.login-container input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.login-container button:hover {
+  background: #2563eb;
+}
