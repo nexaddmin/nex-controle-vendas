@@ -121,7 +121,7 @@ button:hover {
   align-items: center;
 
   /* IMAGEM DE FUNDO */
-  background: url("background.jpg") no-repeat center center;
+  background: url("fundo-de-login.png") no-repeat center center;
   background-size: cover;
 }
 
