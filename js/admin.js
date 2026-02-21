@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+  
+const usuario = localStorage.getItem("usuarioLogado");
 
+if (usuario !== "admin") {
+  window.location.href = "login.html";
+}
   /* ===== SEÇÕES ===== */
   const clientesSection = document.getElementById("clientesSection");
   const entradasSection = document.getElementById("entradasSection");
