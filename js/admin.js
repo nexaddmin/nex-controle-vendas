@@ -45,86 +45,92 @@ div.addEventListener("click", () => {
     localStorage.setItem("entradasCNPJ", JSON.stringify(entradasMensais));
   }
 
-  function renderEntradas() {
-    listaEntradasMensais.innerHTML = "";
+function renderEntradas() {
+  listaEntradasMensais.innerHTML = "";
 
-entradasMensais.forEach((item, index) => {
+  entradasMensais.forEach((item, index) => {
 
-  const linha = document.createElement("div");
+    const card = document.createElement("div");
+    card.className = "card";
 
-  const acoes = document.createElement("div");
+    const titulo = document.createElement("div");
+    titulo.textContent = item.mes;
 
-  // ===== BOTÃO EDITAR =====
-  const editar = document.createElement("div");
-  editar.className = "edit";
-  editar.textContent = "✏️ Editar";
-
-  editar.addEventListener("click", () => {
-    const novoMes = prompt("Editar nome do mês:", item.mes);
-    const novoValor = prompt("Editar valor:", item.valor);
-
-    if (novoMes !== null && novoValor !== null) {
-      entradasMensais[index] = {
-        mes: novoMes,
-        valor: parseFloat(
-          novoValor.replace(/\./g, '').replace(',', '.')
-        )
-      };
-
-      localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
-      renderEntradas();
-    }
-  });
-
-  // ===== BOTÃO DELETE =====
-  const deletar = document.createElement("div");
-  deletar.className = "delete";
-  deletar.textContent = "🗑 Deletar";
-
-  deletar.addEventListener("click", () => {
-    const confirmar = confirm("Tem certeza que deseja excluir?");
-    if (!confirmar) return;
-
-    entradasMensais.splice(index, 1);
-
-    localStorage.setItem("entradasMensais", JSON.stringify(entradasMensais));
-    renderEntradas();
-  });
-
-  // 🔥 AQUI É ONDE ENTRA O appendChild
-  acoes.appendChild(editar);
-  acoes.appendChild(deletar);
-
-  linha.appendChild(acoes);
-  }
-});
-        }
-      });
-
-      card.appendChild(titulo);
-      card.appendChild(valor);
-      card.appendChild(editar);
-
-      listaEntradasMensais.appendChild(card);
+    const valor = document.createElement("div");
+    valor.textContent = item.valor.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
     });
-  }
 
-  btnAddMes.addEventListener("click", () => {
+    const acoes = document.createElement("div");
+    acoes.className = "acoes";
+
+    // ===== EDITAR =====
+    const editar = document.createElement("div");
+    editar.className = "edit";
+    editar.textContent = "✏️ Editar";
+
+    editar.addEventListener("click", () => {
+      const novoMes = prompt("Editar nome do mês:", item.mes);
+      const novoValor = prompt("Editar valor:", item.valor);
+
+      if (novoMes !== null && novoValor !== null) {
+        entradasMensais[index] = {
+          mes: novoMes,
+          valor: parseFloat(
+            novoValor.replace(/\./g, '').replace(',', '.')
+          )
+        };
+
+        salvarEntradas();
+        renderEntradas();
+      }
+    });
+
+    // ===== DELETE =====
+    const deletar = document.createElement("div");
+    deletar.className = "delete";
+    deletar.textContent = "🗑 Deletar";
+
+    deletar.addEventListener("click", () => {
+      const confirmar = confirm("Tem certeza que deseja excluir?");
+      if (!confirmar) return;
+
+      entradasMensais.splice(index, 1);
+      salvarEntradas();
+      renderEntradas();
+    });
+
+    acoes.appendChild(editar);
+    acoes.appendChild(deletar);
+
+    card.appendChild(titulo);
+    card.appendChild(valor);
+    card.appendChild(acoes);
+
+    listaEntradasMensais.appendChild(card);
+  });
+}
+    btnAddMes.addEventListener("click", () => {
 
     const mes = prompt("Nome do mês (Ex: Janeiro / 2026)");
     const valor = prompt("Valor total do mês:");
 
-    if (mes && valor) {
-      entradasMensais.push({
-        mes: mes,
-        valor: parseFloat(valor)
-      });
+  if (mes && valor) {
+    entradasMensais.push({
+      mes: mes,
+      valor: parseFloat(
+        valor.replace(/\./g, '').replace(',', '.')
+      )
+    });
 
-      salvarEntradas();
-      renderEntradas();
-    }
-  });
+    salvarEntradas();
+    renderEntradas();
+  }
+});
 
+  renderEntradas();
+  
   /* ===== NAVEGAÇÃO ===== */
 
 const btnClientes = document.getElementById("btnClientes");
