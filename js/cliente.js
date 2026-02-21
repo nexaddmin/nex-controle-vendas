@@ -1,22 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-// 🔴 PROTEÇÃO CLIENTE
-if (!nome || nome === "admin") {
-  window.location.href = "login.html";
-  return;
-}
+  // 👤 pegar usuário logado
+  const nome = localStorage.getItem("usuarioLogado");
+  const tipo = localStorage.getItem("tipoUsuario");
 
-// 🔴 LOGOUT
-const btnLogout = document.getElementById("btnLogout");
+  // 🔴 PROTEÇÃO CLIENTE
+  if (!nome || tipo !== "cliente") {
+    window.location.href = "index.html";
+    return;
+  }
 
-btnLogout.addEventListener("click", () => {
-  localStorage.removeItem("usuarioLogado");
-  window.location.href = "login.html";
-});
+  // 🔴 LOGOUT
+  const btnLogout = document.getElementById("btnLogout");
+
+  btnLogout.addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "index.html";
+  });
 
   document.getElementById("nomeCliente").textContent = "Cliente: " + nome;
 
-  const lista = document.getElementById("listaEntradas");
+  const lista = document.getElementById("listaEntradasCliente");
   const totalEl = document.getElementById("total");
 
   let dados = JSON.parse(localStorage.getItem("clientesEntradas")) || {};
@@ -44,9 +48,11 @@ btnLogout.addEventListener("click", () => {
     total += item.valor;
   });
 
-  totalEl.textContent = "Total acumulado: " + total.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-  });
+  if (totalEl) {
+    totalEl.textContent = "Total acumulado: " + total.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+  }
 
 });
