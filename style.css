@@ -74,3 +74,123 @@ body.login-body {
 .login-container a:hover {
   text-decoration: underline;
 }
+
+/* ===== CLIENTE (ÁREA DO CLIENTE) ===== */
+
+:root{
+  --azul-principal:#65889d;
+  --azul-escuro:#0d5884;
+  --cinza-fundo:#dadadd;
+  --card:#ffffff;
+}
+
+body:not(.login-body){
+  background: var(--cinza-fundo);
+}
+
+/* Header do cliente */
+header{
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 16px 20px;
+  border-bottom: 4px solid var(--azul-principal);
+}
+
+header h1{
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Deixa os botões do header alinhados e bonitos */
+header .header-actions{
+  display: flex;
+  gap: 10px;
+}
+
+/* Se você ainda não tem essa div no HTML, tudo bem.
+   O CSS abaixo também melhora os botões em geral no header */
+header button{
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+header button:hover{
+  opacity: 1;
+  background: rgba(255,255,255,0.18);
+}
+
+/* Conteúdo */
+main{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+/* Top bar */
+.top-bar{
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.top-bar h2{
+  font-size: 18px;
+  color: #111827;
+}
+
+/* Botão + (se existir na página do cliente, dá pra esconder também) */
+.btn-add{
+  background: var(--azul-principal);
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 18px;
+}
+.btn-add:hover{
+  opacity: 0.95;
+}
+
+/* Grid dos cards */
+.cards{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* Card */
+.card{
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.card h3{
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.card div{
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--azul-escuro);
+}
+
+/* Responsivo */
+@media (max-width: 720px){
+  .cards{
+    grid-template-columns: 1fr;
+  }
+  header{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
