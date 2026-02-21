@@ -1,11 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const nome = localStorage.getItem("usuarioLogado");
+// 🔴 PROTEÇÃO CLIENTE
+if (!nome || nome === "admin") {
+  window.location.href = "login.html";
+  return;
+}
 
-  if (!nome) {
-    window.location.href = "login.html";
-    return;
-  }
+// 🔴 LOGOUT
+const btnLogout = document.getElementById("btnLogout");
+
+btnLogout.addEventListener("click", () => {
+  localStorage.removeItem("usuarioLogado");
+  window.location.href = "login.html";
+});
 
   document.getElementById("nomeCliente").textContent = "Cliente: " + nome;
 
