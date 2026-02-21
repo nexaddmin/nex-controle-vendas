@@ -5,6 +5,14 @@ const usuario = localStorage.getItem("usuarioLogado");
 if (usuario !== "admin") {
   window.location.href = "login.html";
 }
+  // 🔴 LOGOUT
+const btnLogout = document.getElementById("btnLogout");
+
+btnLogout.addEventListener("click", () => {
+  localStorage.removeItem("usuarioLogado");
+  window.location.href = "login.html";
+});
+  
   /* ===== SEÇÕES ===== */
   const clientesSection = document.getElementById("clientesSection");
   const entradasSection = document.getElementById("entradasSection");
