@@ -77,7 +77,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const totalLinha = (item.valor * item.qtd);
 const dataTxt = item.criadoEm
-  ? new Date(item.criadoEm).toLocaleString("pt-BR")
+  ? new Date(item.criadoEm).toLocaleString("pt-BR", {
+      dateStyle: "short",
+      timeStyle: "short"
+    })
   : "";
       
       card.innerHTML = `
