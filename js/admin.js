@@ -133,12 +133,6 @@ function renderEntradas() {
   
   /* ===== NAVEGAÇÃO ===== */
 
-const btnClientes = document.getElementById("btnClientes");
-const btnEntradas = document.getElementById("btnEntradas");
-
-const clientesSection = document.getElementById("clientesSection");
-const entradasSection = document.getElementById("entradasSection");
-
 // Mostrar Entradas
 btnEntradas.addEventListener("click", () => {
   clientesSection.classList.add("hidden");
