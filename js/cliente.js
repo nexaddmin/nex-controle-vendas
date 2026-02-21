@@ -76,16 +76,20 @@ document.addEventListener("DOMContentLoaded", () => {
       card.className = "card";
 
       const totalLinha = (item.valor * item.qtd);
-
+const dataTxt = item.criadoEm
+  ? new Date(item.criadoEm).toLocaleString("pt-BR")
+  : "";
+      
       card.innerHTML = `
         <div class="linha1">
           <div class="desc">${item.desc}</div>
           <div class="total">${formatBRL(totalLinha)}</div>
         </div>
-        <div class="detalhes">
-          <span><strong>Qtd:</strong> ${item.qtd}</span>
-          <span><strong>Valor:</strong> ${formatBRL(item.valor)}</span>
-        </div>
+       <div class="detalhes">
+  <span><strong>Data:</strong> ${dataTxt}</span>
+  <span><strong>Qtd:</strong> ${item.qtd}</span>
+  <span><strong>Valor:</strong> ${formatBRL(item.valor)}</span>
+</div>
       `;
 
       const editar = document.createElement("div");
@@ -137,7 +141,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    lancamentos.unshift({ desc, qtd, valor }); // joga o mais recente pra cima
+    const agora = new Date().toISOString(); // data/hora automática
+
+lancamentos.unshift({ desc, qtd, valor, criadoEm: agora }); // joga o mais recente pra cima
     salvarTudo();
     render();
     fecharForm();
