@@ -1,48 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  // 🔐 PEGAR DADOS DA SESSÃO
   const tipo = localStorage.getItem("tipoUsuario");
   const nome = localStorage.getItem("usuarioLogado");
 
-  // 🔒 BLOQUEIO TOTAL
+  // 🔒 BLOQUEIO TOTAL (só cliente entra)
   if (tipo !== "cliente" || !nome) {
     window.location.href = "index.html";
     return;
   }
 
-  document.getElementById("nomeCliente").textContent = "Cliente: " + nome;
-  
-  // 👤 pegar usuário logado
-  const nome = localStorage.getItem("usuarioLogado");
-  const tipo = localStorage.getItem("tipoUsuario");
-
-  // 🔴 PROTEÇÃO CLIENTE
-  if (!nome || tipo !== "cliente") {
-    window.location.href = "index.html";
-    return;
+  // 👤 MOSTRAR NOME
+  const nomeClienteEl = document.getElementById("nomeCliente");
+  if (nomeClienteEl) {
+    nomeClienteEl.textContent = "Cliente: " + nome;
   }
 
-  // 🔴 LOGOUT
+  // 🚪 LOGOUT
   const btnLogout = document.getElementById("btnLogout");
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "index.html";
+    });
+  }
 
-  btnLogout.addEventListener("click", () => {
-    localStorage.clear();
-    window.location.href = "index.html";
-  });
+  // 📦 PEGAR TODOS OS DADOS
+  const todosDados = JSON.parse(localStorage.getItem("clientesEntradas")) || {};
 
-  document.getElementById("nomeCliente").textContent = "Cliente: " + nome;
+  // 🧱 CRIAR ESTRUTURA SE NÃO EXISTIR
+  if (!todosDados[nome]) {
+    todosDados[nome] = [];
+  }
+
+  const dadosDoCliente = todosDados[nome];
 
   const lista = document.getElementById("listaEntradasCliente");
-  const totalEl = document.getElementById("total");
-
-  let dados = JSON.parse(localStorage.getItem("clientesEntradas")) || {};
-
-  if (!dados[nome]) {
-    dados[nome] = [];
-  }
 
   let total = 0;
 
-  dados[nome].forEach(item => {
+  // 📊 RENDER DAS ENTRADAS
+  dadosDoCliente.forEach(item => {
 
     const card = document.createElement("div");
     card.className = "card";
@@ -58,12 +56,5 @@ document.addEventListener("DOMContentLoaded", () => {
     lista.appendChild(card);
     total += item.valor;
   });
-
-  if (totalEl) {
-    totalEl.textContent = "Total acumulado: " + total.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL"
-    });
-  }
 
 });
