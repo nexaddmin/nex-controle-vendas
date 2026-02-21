@@ -1,6 +1,20 @@
 // js/auth.js
 
 document.addEventListener("DOMContentLoaded", function () {
+
+  // 🔐 Se já estiver logado, redireciona automaticamente
+  const tipo = localStorage.getItem("tipoUsuario");
+
+  if (tipo === "admin") {
+    window.location.href = "admin.html";
+    return;
+  }
+
+  if (tipo === "cliente") {
+    window.location.href = "cliente.html";
+    return;
+  }
+
   const form = document.getElementById("loginForm");
   if (!form) return;
 
@@ -38,4 +52,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
     alert("Usuário ou senha inválidos");
   });
+
 });
