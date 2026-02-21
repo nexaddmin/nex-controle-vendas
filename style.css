@@ -34,6 +34,11 @@ body.login-body {
   font-weight: bold;
 }
 
+/* IMAGEM */
+.login-container img {
+  max-width: 100px;
+  margin-bottom: 20px;
+}
 
 /* INPUTS */
 .login-container input[type="text"],
