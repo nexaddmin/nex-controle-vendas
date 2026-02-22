@@ -21,7 +21,8 @@ if (!nome) {
   const titulo = document.getElementById("tituloCliente");
   const lista = document.getElementById("listaAdminCliente");
 
-  titulo.textContent = "Lançamentos - " + nome;
+  const nomeBonito = nome.charAt(0).toUpperCase() + nome.slice(1);
+titulo.textContent = "Lançamentos - " + nomeBonito;
 
   const todos = JSON.parse(localStorage.getItem("clientesEntradas")) || {};
   if (!todos[nome]) todos[nome] = [];
