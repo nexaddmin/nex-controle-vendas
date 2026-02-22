@@ -7,8 +7,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
- const params = new URLSearchParams(window.location.search);
-const nomeParam = params.get("nome");
+const params = new URLSearchParams(window.location.search);
+let nomeParam = params.get("nome");
+
+// fallback extra (caso venha undefined)
+if (!nomeParam || nomeParam === "null") {
+  window.location.href = "admin.html";
+  return;
+}
+
+const nome = nomeParam.toLowerCase().trim();
+const nomeBonito = nome.charAt(0).toUpperCase() + nome.slice(1);
 
 // normaliza para bater com o localStorage (cliente salva em minúsculo)
 const nome = (nomeParam || "").toLowerCase();
