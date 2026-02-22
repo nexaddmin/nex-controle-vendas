@@ -13,9 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
   nomeClienteEl.textContent = nome; // só o nome, como você pediu
 
   const btnLogout = document.getElementById("btnLogout");
-  btnLogout.addEventListener("click", () => {
-    localStorage.clear();
-    window.location.href = "index.html";
+ btnLogout.addEventListener("click", () => {
+  localStorage.removeItem("tipoUsuario");
+  localStorage.removeItem("usuarioLogado");
+  window.location.href = "index.html";
   });
 
   // Elementos do form
