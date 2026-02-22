@@ -48,7 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
      div.textContent = cliente.nome;
 
 div.addEventListener("click", () => {
-  window.location.href = "cliente-admin.html?nome=" + cliente.nome;
+  localStorage.setItem("clienteSelecionado", cliente.nome.toLowerCase());
+  window.location.href = "cliente-admin.html";
 });
       listaClientes.appendChild(div);
     });
