@@ -1,49 +1,45 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // ✅ DEBUG: se isso não aparecer, é cache / script não carregou
+  console.log("cliente-admin.js carregou ✅");
 
-  // 🔒 proteção admin
+  // 🔒 proteção admin (sessão)
   const tipo = localStorage.getItem("tipoUsuario");
   const usuario = localStorage.getItem("usuarioLogado");
 
   if (tipo !== "admin" || usuario !== "admin") {
+    alert("Acesso negado (não está logado como admin). Faça login novamente.");
     window.location.href = "index.html";
     return;
   }
 
-  // ✅ Pega o nome do cliente pela URL: cliente-admin.html?nome=Cinza
+  // ✅ pega o cliente pela URL: cliente-admin.html?nome=Cinza
   const params = new URLSearchParams(window.location.search);
   const nomeParam = params.get("nome");
 
-  if (!nomeParam || nomeParam === "null") {
+  if (!nomeParam) {
+    alert("Faltou o nome na URL (?nome=...). Abra clicando no cliente dentro do admin.");
     window.location.href = "admin.html";
     return;
   }
 
-  // normaliza para bater com o localStorage (cliente salva em minúsculo)
   const nome = nomeParam.toLowerCase().trim();
-
-  if (!nome) {
-    window.location.href = "admin.html";
-    return;
-  }
-
   const nomeBonito = nome.charAt(0).toUpperCase() + nome.slice(1);
 
-  // ✅ Título e subtítulo
-  const titulo = document.getElementById("tituloCliente");
-  if (titulo) titulo.textContent = "Lançamentos";
-
+  // ✅ Topo
   const nomeTopoEl = document.getElementById("nomeClienteTopo");
   if (nomeTopoEl) nomeTopoEl.textContent = nomeBonito;
 
   // ✅ Lista
   const lista = document.getElementById("listaAdminCliente");
-  if (!lista) return;
+  if (!lista) {
+    alert("Elemento #listaAdminCliente não encontrado no HTML.");
+    return;
+  }
 
-  // ✅ Carrega dados
+  // ✅ Dados
   const STORAGE_KEY = "clientesEntradas";
   const todos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
   if (!todos[nome]) todos[nome] = [];
-
   let lancamentos = todos[nome];
 
   function salvar() {
@@ -52,31 +48,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function formatBRL(n) {
-    return Number(n || 0).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL"
-    });
+    return Number(n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   }
 
   function render() {
     lista.innerHTML = "";
 
     lancamentos.forEach((item, index) => {
-
       const qtd = Number(item.qtd || 1);
       const valor = Number(item.valor || 0);
       const total = valor * qtd;
 
       const dataTxt = item.criadoEm
-        ? new Date(item.criadoEm).toLocaleString("pt-BR", {
-            dateStyle: "short",
-            timeStyle: "short"
-          })
+        ? new Date(item.criadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
         : "";
 
       const card = document.createElement("div");
       card.className = "card";
-
       card.innerHTML = `
         <div class="linha1">
           <div class="desc">${item.desc || "(sem descrição)"}</div>
@@ -92,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const editar = document.createElement("div");
       editar.className = "edit";
       editar.textContent = "✏️ Editar";
-
       editar.addEventListener("click", () => {
         const novaDesc = prompt("Editar descrição:", item.desc || "");
         if (novaDesc === null) return;
@@ -100,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const novaQtdTxt = prompt("Editar quantidade:", String(qtd));
         if (novaQtdTxt === null) return;
 
-        const novoValorTxt = prompt("Editar valor:", String(valor).replace(".", ","));
+        const novoValorTxt = prompt("Editar valor (ex: 35,90):", String(valor).replace(".", ","));
         if (novoValorTxt === null) return;
 
         const novaQtd = parseInt(novaQtdTxt, 10);
@@ -119,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const deletar = document.createElement("div");
       deletar.className = "delete";
       deletar.textContent = "🗑 Deletar";
-
       deletar.addEventListener("click", () => {
         if (!confirm("Excluir lançamento?")) return;
         lancamentos.splice(index, 1);
@@ -129,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       card.appendChild(editar);
       card.appendChild(deletar);
-
       lista.appendChild(card);
     });
   }
