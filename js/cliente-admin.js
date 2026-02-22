@@ -1,39 +1,59 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const params = new URLSearchParams(window.location.search);
-  const nome = params.get("nome");
-
-  document.getElementById("nomeCliente").textContent = "Cliente: " + nome;
-
-  const btnAdd = document.getElementById("btnAddEntrada");
-  const lista = document.getElementById("listaEntradasCliente");
-
-  let dados = JSON.parse(localStorage.getItem("clientesEntradas")) || {};
-
-  if (!dados[nome]) {
-    dados[nome] = [];
+  // 🔒 proteção admin
+  const tipo = localStorage.getItem("tipoUsuario");
+  if (tipo !== "admin") {
+    window.location.href = "index.html";
+    return;
   }
 
+  const nome = localStorage.getItem("clienteSelecionado");
+  const titulo = document.getElementById("tituloCliente");
+  const lista = document.getElementById("listaAdminCliente");
+
+  titulo.textContent = "Lançamentos - " + nome;
+
+  const todos = JSON.parse(localStorage.getItem("clientesEntradas")) || {};
+  if (!todos[nome]) todos[nome] = [];
+
+  let lancamentos = todos[nome];
+
   function salvar() {
-    localStorage.setItem("clientesEntradas", JSON.stringify(dados));
+    todos[nome] = lancamentos;
+    localStorage.setItem("clientesEntradas", JSON.stringify(todos));
+  }
+
+  function formatBRL(n) {
+    return Number(n).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
   }
 
   function render() {
     lista.innerHTML = "";
 
-    dados[nome].forEach((item, index) => {
+    lancamentos.forEach((item, index) => {
+
+      const total = item.valor * item.qtd;
 
       const card = document.createElement("div");
       card.className = "card";
 
-      const titulo = document.createElement("h3");
-      titulo.textContent = item.mes;
-
-      const valor = document.createElement("div");
-      valor.textContent = item.valor.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-      });
+      card.innerHTML = `
+        <div class="linha1">
+          <div class="desc">${item.desc}</div>
+          <div class="total">${formatBRL(total)}</div>
+        </div>
+        <div class="detalhes">
+          <span>Qtd: ${item.qtd}</span>
+          <span>Valor: ${formatBRL(item.valor)}</span>
+          <span>Data: ${new Date(item.criadoEm).toLocaleString("pt-BR", {
+            dateStyle: "short",
+            timeStyle: "short"
+          })}</span>
+        </div>
+      `;
 
       const editar = document.createElement("div");
       editar.className = "edit";
@@ -41,47 +61,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
       editar.addEventListener("click", () => {
 
-        const novoMes = prompt("Editar mês:", item.mes);
-        const novoValor = prompt("Editar valor:", item.valor);
+        const novaDesc = prompt("Editar descrição:", item.desc);
+        if (!novaDesc) return;
 
-        if (novoMes && novoValor) {
-          dados[nome][index] = {
-            mes: novoMes,
-            valor: parseFloat(novoValor.replace(/\./g, '').replace(',', '.'))
-          };
+        const novaQtd = parseInt(prompt("Editar quantidade:", item.qtd), 10);
+        const novoValor = parseFloat(
+          prompt("Editar valor:", item.valor)
+        );
 
-          salvar();
-          render();
-        }
+        if (!novaQtd || !novoValor) return;
+
+        lancamentos[index] = {
+          ...item,
+          desc: novaDesc,
+          qtd: novaQtd,
+          valor: novoValor
+        };
+
+        salvar();
+        render();
       });
 
-      card.appendChild(titulo);
-      card.appendChild(valor);
+      const deletar = document.createElement("div");
+      deletar.className = "delete";
+      deletar.textContent = "🗑 Deletar";
+
+      deletar.addEventListener("click", () => {
+        if (!confirm("Excluir lançamento?")) return;
+
+        lancamentos.splice(index, 1);
+        salvar();
+        render();
+      });
+
       card.appendChild(editar);
+      card.appendChild(deletar);
 
       lista.appendChild(card);
     });
   }
 
-  btnAdd.addEventListener("click", () => {
-
-    const mes = prompt("Mês:");
-    const valor = prompt("Valor:");
-
-    if (mes && valor) {
-      dados[nome].push({
-        mes: mes,
-        valor: parseFloat(valor.replace(/\./g, '').replace(',', '.'))
-      });
-
-      salvar();
-      render();
-    }
-  });
-
   render();
 });
 
-function voltar() {
+function voltarAdmin() {
   window.location.href = "admin.html";
 }
