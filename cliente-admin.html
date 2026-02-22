@@ -8,12 +8,34 @@
 </head>
 <body>
 
-<header class="cliente-header">
-  <div id="tituloCliente"></div>
+<header class="admin-cliente-header">
 
-  <div class="cliente-acoes">
-    <button onclick="voltarAdmin()">← Voltar</button>
+  <div class="admin-top-left">
+    <div class="admin-stat admin-stat-month">
+      <div class="admin-stat-label">Total Mensal</div>
+      <div class="admin-stat-value" id="totalMes">R$ 0,00</div>
+    </div>
+
+    <div class="admin-stat admin-stat-week">
+      <div class="admin-stat-label">Total Semanal</div>
+      <div class="admin-stat-value" id="totalSemana">R$ 0,00</div>
+    </div>
+
+    <button class="admin-action admin-action-month" id="btnRelatorioMensal">
+      Gerar Relatório Mensal
+    </button>
+
+    <button class="admin-action admin-action-week" id="btnRelatorioSemanal">
+      Gerar Relatório Semanal
+    </button>
   </div>
+
+  <div class="admin-cliente-titulo" id="tituloCliente">
+    Lançamentos
+  </div>
+
+  <button class="btn-voltar" onclick="voltarAdmin()">← Voltar</button>
+
 </header>
 
 <main class="cliente-main">
