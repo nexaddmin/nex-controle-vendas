@@ -16,8 +16,8 @@ if (!nomeParam || nomeParam === "null") {
   return;
 }
 
-const nome = nomeParam.toLowerCase().trim();
-const nomeBonito = nome.charAt(0).toUpperCase() + nome.slice(1);
+const nomeTopoEl = document.getElementById("nomeClienteTopo");
+if (nomeTopoEl) nomeTopoEl.textContent = nomeBonito;
 
 // normaliza para bater com o localStorage (cliente salva em minúsculo)
 const nome = (nomeParam || "").toLowerCase();
