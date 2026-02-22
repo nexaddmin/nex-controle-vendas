@@ -7,7 +7,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const nome = localStorage.getItem("clienteSelecionado");
+ const params = new URLSearchParams(window.location.search);
+const nomeParam = params.get("nome");
+
+// normaliza para bater com o localStorage (cliente salva em minúsculo)
+const nome = (nomeParam || "").toLowerCase();
+
+if (!nome) {
+  window.location.href = "admin.html";
+  return;
+}
+  
   const titulo = document.getElementById("tituloCliente");
   const lista = document.getElementById("listaAdminCliente");
 
