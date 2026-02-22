@@ -245,7 +245,7 @@ body.login-body {
   .form-row{ grid-template-columns: 1fr; }
 }
 
-/-----cliente-admin.js-------/
+/* ===== cliente-admin.js =====*/
 
 .admin-cliente-header{
   background:#0d5884;
