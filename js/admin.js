@@ -48,8 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
      div.textContent = cliente.nome;
 
 div.addEventListener("click", () => {
-  localStorage.setItem("clienteSelecionado", cliente.nome.toLowerCase());
-  window.location.href = "cliente-admin.html";
+  window.location.href =
+    "cliente-admin.html?nome=" + encodeURIComponent(cliente.nome);
 });
       listaClientes.appendChild(div);
     });
