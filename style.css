@@ -244,3 +244,79 @@ body.login-body {
   .cards{ grid-template-columns: 1fr; }
   .form-row{ grid-template-columns: 1fr; }
 }
+
+/-----cliente-admin.js-------/
+
+.admin-cliente-header{
+  background:#0d5884;
+  color:#fff;
+  padding:14px 18px;
+  border-bottom:4px solid #65889d;
+}
+
+.admin-top-left,
+.admin-top-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.admin-cliente-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+
+.admin-cliente-titulo{
+  font-weight:900;
+  font-size:16px;
+  margin-top:8px;
+}
+
+.admin-stat{
+  width:220px;
+  height:70px;
+  padding:10px 12px;
+  border-radius:14px;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.admin-stat-month{
+  background:#3da6e6; /* azul */
+}
+
+.admin-stat-week{
+  background:#e53935; /* vermelho */
+}
+
+.admin-action{
+  width:180px;
+  height:70px;
+  border-radius:14px;
+  border:none;
+  font-weight:900;
+  cursor:pointer;
+  color:#fff;
+}
+
+.admin-action-month{
+  background:#2ecc71; /* verde */
+}
+
+.admin-action-week{
+  background:#9b59b6; /* roxo */
+}
+
+.admin-stat-label{
+  font-size:12px;
+  font-weight:800;
+}
+
+.admin-stat-value{
+  font-size:18px;
+  font-weight:900;
+  margin-top:4px;
+}
