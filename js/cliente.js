@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const lista = document.getElementById("listaEntradasCliente");
 
   // Storage: por cliente
-  const STORAGE_KEY = "clientesLancamentos";
+  const STORAGE_KEY = "clientesEntradas";
   const todos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
   if (!todos[nome]) todos[nome] = [];
   let lancamentos = todos[nome];
