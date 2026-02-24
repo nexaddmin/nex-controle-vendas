@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <title>Painel Admin – Nex Admin</title>
   
-<button id="btnLogout">Sair</button>
-  
   <link href="https://fonts.googleapis.com/css2?family=Literata:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -93,6 +91,26 @@
     .hidden {
   display: none;
    }
+    
+    /* Botão de sair */
+    .aside-top{
+  display: flex;
+  justify-content: flex-end; /* joga pro canto direito */
+  align-items: center;
+}
+
+.btn-logout{
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.btn-logout:hover{
+  background: rgba(255,255,255,0.16);
+}
   </style>
 </head>
 
@@ -100,7 +118,11 @@
 
   <!-- MENU -->
   <aside>
-    <h1>Nex Admin</h1>
+  <div class="aside-top">
+    <button id="btnLogout" class="btn-logout">Sair</button>
+  </div>
+
+  <h1>Nex Admin</h1>
     <button class="menu-btn" id="btnClientes">👥 Clientes</button>
     <button class="menu-btn" id="btnEntradas">📥 Minhas entradas</button>
     <button class="menu-btn">💸 Saídas</button>
