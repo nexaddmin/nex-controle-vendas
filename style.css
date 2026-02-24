@@ -323,19 +323,19 @@ body.login-body {
 /* ===== ADMIN > CLIENTE (CORES PADRÃO) ===== */
 .admin-stat,
 .admin-action{
-  background: #b9c2fa !important;
-  border: 1px solid rgba(0,0,0,0.08) !important;
-  color: #0f172a !important;
+  background: #7d95c4 !important;
+  border: 1px solid rgba(0,0,0,0.10) !important;
+  color: #ffffff !important;
 }
 
 /* Textos dentro dos cards */
 .admin-stat-label{
-  color: #0f172a !important;
-  opacity: 0.9;
+  color: #ffffff !important;
+  opacity: 0.95;
 }
 
 .admin-stat-value{
-  color: #0f172a !important;
+  color: #ffffff !important;
 }
 
 /* Nome do cliente abaixo do título */
@@ -343,5 +343,6 @@ body.login-body {
   margin-top: 2px;
   font-size: 12px;
   font-weight: 800;
-  opacity: 0.85;
+  opacity: 0.9;
+  color: #ffffff;
 }
