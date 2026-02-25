@@ -187,7 +187,7 @@ const novaForma = opcoes[idx];
     const desc = descEntrada.value.trim();
     const qtd = parseInt(qtdEntrada.value, 10);
     const valor = parseValorBR(valorEntrada.value);
-    const formaPagamento = formaPagamentoEntrada.value.trim();
+    const formaPagamento = formaPagamentoEntrada.value;
     
     if (!desc || !qtd || qtd < 1 || valor === null) {
       alert("Preencha corretamente (descrição, quantidade >= 1 e valor válido).");
