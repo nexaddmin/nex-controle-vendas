@@ -93,13 +93,34 @@ card.innerHTML = `
 
         const novaQtd = parseInt(novaQtdTxt, 10);
         const novoValor = parseFloat(String(novoValorTxt).replace(/\./g, "").replace(",", "."));
+        
+       const opcoes = ["Dinheiro", "Pix", "Débito", "Crédito", "Transferência"];
+       const escolha = prompt(
+    "Forma de pagamento:\n1) Dinheiro\n2) Pix\n3) Débito\n4) Crédito\n5) Transferência\n\nDigite 1 a 5:",
+    String((opcoes.indexOf(item.formaPagamento) + 1) || 1)
+  );
+  if (escolha === null) return;
 
+      const idx = parseInt(escolha, 10) - 1;
+  if (idx < 0 || idx > 4) {
+    alert("Escolha inválida (digite 1 a 5).");
+  return;
+}
+
+const novaForma = opcoes[idx];
+        
         if (!novaDesc.trim() || !novaQtd || novaQtd < 1 || isNaN(novoValor)) {
           alert("Preencha corretamente: descrição, quantidade >= 1 e valor válido.");
           return;
         }
 
-        lancamentos[index] = { ...item, desc: novaDesc.trim(), qtd: novaQtd, valor: novoValor };
+      lancamentos[index] = {
+  ...item,
+  desc: novaDesc.trim(),
+  qtd: novaQtd,
+  valor: novoValor,
+  formaPagamento: novaForma
+};
         salvar();
         render();
       });
