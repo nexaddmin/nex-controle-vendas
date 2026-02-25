@@ -28,7 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const descEntrada = document.getElementById("descEntrada");
   const qtdEntrada = document.getElementById("qtdEntrada");
   const valorEntrada = document.getElementById("valorEntrada");
-
+  const formaPagamentoEntrada = document.getElementById("formaPagamentoEntrada");
+  
   // Lista
   const lista = document.getElementById("listaEntradasCliente");
 
@@ -95,11 +96,12 @@ const dataTxt = item.criadoEm
           <div class="desc">${item.desc}</div>
           <div class="total">${formatBRL(totalLinha)}</div>
         </div>
-       <div class="detalhes">
-  <span><strong>Data:</strong> ${dataTxt}</span>
-  <span><strong>Qtd:</strong> ${item.qtd}</span>
-  <span><strong>Valor:</strong> ${formatBRL(item.valor)}</span>
-</div>
+   <div class="detalhes">
+    <span><strong>Data:</strong> ${dataTxt}</span>
+    <span><strong>Qtd:</strong> ${item.qtd}</span>
+    <span><strong>Valor:</strong> ${formatBRL(item.valor)}</span>
+    <span><strong>Pagamento:</strong> ${item.formaPagamento || "-"}</span>
+  </div>
       `;
 
       const editar = document.createElement("div");
@@ -126,7 +128,10 @@ if (!podeEditar(item.criadoEm)) {
 
     const novoValorTxt = prompt("Editar valor (R$):", String(item.valor).replace(".", ","));
     if (novoValorTxt === null) return;
-
+    
+    const novaForma = prompt("Editar forma de pagamento:", item.formaPagamento || "");
+    if (novaForma === null) return;
+    
     const qtdN = parseInt(novaQtd, 10);
     const valorN = parseValorBR(novoValorTxt);
 
@@ -136,12 +141,13 @@ if (!podeEditar(item.criadoEm)) {
     }
 
     // ✅ mantém criadoEm para não “resetar” o prazo
-    lancamentos[index] = {
+     lancamentos[index] = {
       ...item,
       desc: novaDesc.trim(),
       qtd: qtdN,
-      valor: valorN
-    };
+      valor: valorN,
+      formaPagamento: novaForma.trim()
+};
 
     salvarTudo();
     render();
@@ -169,7 +175,8 @@ if (!podeEditar(item.criadoEm)) {
     const desc = descEntrada.value.trim();
     const qtd = parseInt(qtdEntrada.value, 10);
     const valor = parseValorBR(valorEntrada.value);
-
+    const formaPagamento = formaPagamentoEntrada.value.trim();
+    
     if (!desc || !qtd || qtd < 1 || valor === null) {
       alert("Preencha corretamente (descrição, quantidade >= 1 e valor válido).");
       return;
@@ -177,7 +184,13 @@ if (!podeEditar(item.criadoEm)) {
 
     const agora = new Date().toISOString(); // data/hora automática
 
-lancamentos.unshift({ desc, qtd, valor, criadoEm: agora }); // joga o mais recente pra cima
+lancamentos.unshift({          // joga o mais recente pra cima
+  desc,
+  qtd,
+  valor,
+  formaPagamento,
+  criadoEm: agora
+});                                
     salvarTudo();
     render();
     fecharForm();
