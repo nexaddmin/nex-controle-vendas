@@ -65,18 +65,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const card = document.createElement("div");
       card.className = "card";
-      card.innerHTML = `
-        <div class="linha1">
-          <div class="desc">${item.desc || "(sem descrição)"}</div>
-          <div class="total">${formatBRL(total)}</div>
-        </div>
-        <div class="detalhes">
-          <span><strong>Qtd:</strong> ${qtd}</span>
-          <span><strong>Valor:</strong> ${formatBRL(valor)}</span>
-          ${dataTxt ? `<span><strong>Data:</strong> ${dataTxt}</span>` : ""}
-        </div>
-      `;
-
+      
+     const dataTxt = item.criadoEm
+      ? new Date(item.criadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+      : "";
+card.innerHTML = `
+  <div class="linha1">
+    <div class="desc">${item.desc || "(sem descrição)"}</div>
+    <div class="total">${formatBRL(total)}</div>
+  </div>
+  <div class="detalhes">
+    ${dataTxt ? `<span><strong>Data:</strong> ${dataTxt}</span>` : ""}
+    <span><strong>Qtd:</strong> ${item.qtd || 1}</span>
+    <span><strong>Valor:</strong> ${formatBRL(item.valor || 0)}</span>
+    <span><strong>Pagamento:</strong> ${item.formaPagamento || "-"}</span>
+  </div>
+`;
       const editar = document.createElement("div");
       editar.className = "edit";
       editar.textContent = "✏️ Editar";
