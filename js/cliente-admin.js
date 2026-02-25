@@ -59,10 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const valor = Number(item.valor || 0);
       const total = valor * qtd;
 
-      const dataTxt = item.criadoEm
-        ? new Date(item.criadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
-        : "";
-
 const card = document.createElement("div");
 card.className = "card";
 
