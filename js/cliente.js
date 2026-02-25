@@ -129,8 +129,20 @@ if (!podeEditar(item.criadoEm)) {
     const novoValorTxt = prompt("Editar valor (R$):", String(item.valor).replace(".", ","));
     if (novoValorTxt === null) return;
     
-    const novaForma = prompt("Editar forma de pagamento:", item.formaPagamento || "");
-    if (novaForma === null) return;
+ const opcoes = ["Dinheiro", "Pix", "Débito", "Crédito", "Transferência"];
+ const escolha = prompt(
+  "Forma de pagamento:\n1) Dinheiro\n2) Pix\n3) Débito\n4) Crédito\n5) Transferência\n\nDigite 1 a 5:",
+  String(opcoes.indexOf(item.formaPagamento) + 1 || 1)
+);
+if (escolha === null) return;
+
+const idx = parseInt(escolha, 10) - 1;
+if (idx < 0 || idx > 4) {
+  alert("Escolha inválida (digite 1 a 5).");
+  return;
+}
+
+const novaForma = opcoes[idx];
     
     const qtdN = parseInt(novaQtd, 10);
     const valorN = parseValorBR(novoValorTxt);
