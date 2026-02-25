@@ -69,6 +69,7 @@ function podeEditar(criadoEm) {
     descEntrada.value = "";
     qtdEntrada.value = "1";
     valorEntrada.value = "";
+    formaPagamentoEntrada.value = "Dinheiro";
     descEntrada.focus();
   }
 
@@ -104,7 +105,7 @@ const dataTxt = item.criadoEm
   </div>
       `;
 
-      const editar = document.createElement("div");
+const editar = document.createElement("div");
 editar.className = "edit";
 
 if (!podeEditar(item.criadoEm)) {
@@ -128,22 +129,20 @@ if (!podeEditar(item.criadoEm)) {
 
     const novoValorTxt = prompt("Editar valor (R$):", String(item.valor).replace(".", ","));
     if (novoValorTxt === null) return;
-    
- const opcoes = ["Dinheiro", "Pix", "Débito", "Crédito", "Transferência"];
- const escolha = prompt(
-  "Forma de pagamento:\n1) Dinheiro\n2) Pix\n3) Débito\n4) Crédito\n5) Transferência\n\nDigite 1 a 5:",
-  String(opcoes.indexOf(item.formaPagamento) + 1 || 1)
-);
-if (escolha === null) return;
 
-const idx = parseInt(escolha, 10) - 1;
-if (idx < 0 || idx > 4) {
-  alert("Escolha inválida (digite 1 a 5).");
-  return;
-}
+    const opcoes = ["Dinheiro", "Pix", "Débito", "Crédito", "Transferência"];
+    const escolha = prompt(
+      "Forma de pagamento:\n1) Dinheiro\n2) Pix\n3) Débito\n4) Crédito\n5) Transferência\n\nDigite 1 a 5:",
+      String((opcoes.indexOf(item.formaPagamento) + 1) || 1)
+    );
+    if (escolha === null) return;
 
-const novaForma = opcoes[idx];
-    
+    const idx = parseInt(escolha, 10) - 1;
+    if (idx < 0 || idx > 4) {
+      alert("Escolha inválida (digite 1 a 5).");
+      return;
+    }
+
     const qtdN = parseInt(novaQtd, 10);
     const valorN = parseValorBR(novoValorTxt);
 
@@ -152,24 +151,19 @@ const novaForma = opcoes[idx];
       return;
     }
 
-    // ✅ mantém criadoEm para não “resetar” o prazo
-     lancamentos[index] = {
+    // mantém criadoEm (não reseta as 24h)
+    lancamentos[index] = {
       ...item,
       desc: novaDesc.trim(),
       qtd: qtdN,
       valor: valorN,
-      formaPagamento: novaForma.trim()
-};
+      formaPagamento: opcoes[idx]
+    };
 
     salvarTudo();
     render();
   });
 }
-
-        lancamentos[index] = { desc: novaDesc.trim(), qtd: qtdN, valor: valorN };
-        salvarTudo();
-        render();
-      });
 
       card.appendChild(editar);
       lista.appendChild(card);
