@@ -56,7 +56,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function formatBRL(n) {
     return Number(n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   }
-
+function podeEditar(criadoEm) {
+  if (!criadoEm) return true; // se for antigo sem data, deixa editar
+  const agora = Date.now();
+  const criado = new Date(criadoEm).getTime();
+  const limiteMs = 24 * 60 * 60 * 1000; // 24h
+  return (agora - criado) <= limiteMs;
+}
   function abrirForm() {
     formEntrada.classList.remove("hidden");
     descEntrada.value = "";
@@ -97,26 +103,50 @@ const dataTxt = item.criadoEm
       `;
 
       const editar = document.createElement("div");
-      editar.className = "edit";
-      editar.textContent = "✏️ Editar";
+editar.className = "edit";
 
-      editar.addEventListener("click", () => {
-        const novaDesc = prompt("Editar descrição:", item.desc);
-        if (novaDesc === null) return;
+if (!podeEditar(item.criadoEm)) {
+  editar.textContent = "⛔ Prazo expirado";
+  editar.style.opacity = "0.5";
+  editar.style.cursor = "not-allowed";
 
-        const novaQtd = prompt("Editar quantidade:", String(item.qtd));
-        if (novaQtd === null) return;
+  editar.addEventListener("click", () => {
+    alert("O prazo de 24h para edição expirou.");
+  });
 
-        const novoValorTxt = prompt("Editar valor (R$):", String(item.valor).replace(".", ","));
-        if (novoValorTxt === null) return;
+} else {
+  editar.textContent = "✏️ Editar";
 
-        const qtdN = parseInt(novaQtd, 10);
-        const valorN = parseValorBR(novoValorTxt);
+  editar.addEventListener("click", () => {
+    const novaDesc = prompt("Editar descrição:", item.desc);
+    if (novaDesc === null) return;
 
-        if (!novaDesc.trim() || !qtdN || qtdN < 1 || valorN === null) {
-          alert("Preencha corretamente (descrição, quantidade >= 1 e valor válido).");
-          return;
-        }
+    const novaQtd = prompt("Editar quantidade:", String(item.qtd));
+    if (novaQtd === null) return;
+
+    const novoValorTxt = prompt("Editar valor (R$):", String(item.valor).replace(".", ","));
+    if (novoValorTxt === null) return;
+
+    const qtdN = parseInt(novaQtd, 10);
+    const valorN = parseValorBR(novoValorTxt);
+
+    if (!novaDesc.trim() || !qtdN || qtdN < 1 || valorN === null) {
+      alert("Preencha corretamente (descrição, quantidade >= 1 e valor válido).");
+      return;
+    }
+
+    // ✅ mantém criadoEm para não “resetar” o prazo
+    lancamentos[index] = {
+      ...item,
+      desc: novaDesc.trim(),
+      qtd: qtdN,
+      valor: valorN
+    };
+
+    salvarTudo();
+    render();
+  });
+}
 
         lancamentos[index] = { desc: novaDesc.trim(), qtd: qtdN, valor: valorN };
         salvarTudo();
