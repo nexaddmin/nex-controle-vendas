@@ -151,15 +151,18 @@ body.login-body {
   color: #1f2937;
 }
 
-.form-row input{
+.form-row input,
+.form-row select{
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #cfd6dd;
   border-radius: 10px;
   outline: none;
+  background: #fff;
 }
 
-.form-row input:focus{
+.form-row input:focus,
+.form-row select:focus{
   border-color: #65889d;
 }
 
