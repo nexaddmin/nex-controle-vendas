@@ -63,12 +63,13 @@ document.addEventListener("DOMContentLoaded", () => {
         ? new Date(item.criadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
         : "";
 
-      const card = document.createElement("div");
-      card.className = "card";
-      
-     const dataTxt = item.criadoEm
-      ? new Date(item.criadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
-      : "";
+const card = document.createElement("div");
+card.className = "card";
+
+const dataTxt = item.criadoEm
+  ? new Date(item.criadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+  : "";
+
 card.innerHTML = `
   <div class="linha1">
     <div class="desc">${item.desc || "(sem descrição)"}</div>
@@ -76,8 +77,8 @@ card.innerHTML = `
   </div>
   <div class="detalhes">
     ${dataTxt ? `<span><strong>Data:</strong> ${dataTxt}</span>` : ""}
-    <span><strong>Qtd:</strong> ${item.qtd || 1}</span>
-    <span><strong>Valor:</strong> ${formatBRL(item.valor || 0)}</span>
+    <span><strong>Qtd:</strong> ${qtd}</span>
+    <span><strong>Valor:</strong> ${formatBRL(valor)}</span>
     <span><strong>Pagamento:</strong> ${item.formaPagamento || "-"}</span>
   </div>
 `;
