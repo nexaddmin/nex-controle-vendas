@@ -387,6 +387,7 @@ function renderRelatorios() {
   lista.forEach((r) => {
     const card = document.createElement("div");
     card.className = "card";
+    card.style.position = "relative"; // necessário pro botão ficar no canto
 
     const titulo = document.createElement("div");
     titulo.style.fontWeight = "900";
@@ -419,6 +420,36 @@ function renderRelatorios() {
     card.appendChild(sub);
     card.appendChild(total);
     card.appendChild(ver);
+
+    // BOTÃO DELETAR
+  const btnDelete = document.createElement("div");
+  btnDelete.textContent = "🗑";
+  btnDelete.style.position = "absolute";
+  btnDelete.style.top = "10px";
+  btnDelete.style.right = "12px";
+  btnDelete.style.cursor = "pointer";
+  btnDelete.style.fontSize = "16px";
+  btnDelete.style.opacity = "0.6";
+
+  btnDelete.addEventListener("mouseenter", () => {
+    btnDelete.style.opacity = "1";
+});
+
+  btnDelete.addEventListener("mouseleave", () => {
+    btnDelete.style.opacity = "0.6";
+});
+
+  btnDelete.addEventListener("click", () => {
+    if (!confirm("Excluir este relatório?")) return;
+
+    const atual = carregarRelatorios();
+    const novaLista = atual.filter(item => item.id !== r.id);
+    
+  salvarRelatorios(novaLista);
+  renderRelatorios();
+});
+
+card.appendChild(btnDelete);
 
     listaRelatoriosEl.appendChild(card);
   });
