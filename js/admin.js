@@ -346,9 +346,152 @@ if (btnAddSaida) {
   });
 }
   
+  /* ===== RELATÓRIOS (GERAL) ===== */
+
+const REL_KEY = "relatoriosNex";
+
+function carregarRelatorios() {
+  return JSON.parse(localStorage.getItem(REL_KEY)) || [];
+}
+
+function salvarRelatorios(lista) {
+  localStorage.setItem(REL_KEY, JSON.stringify(lista));
+}
+
+function adicionarRelatorio(rel) {
+  const lista = carregarRelatorios();
+  lista.unshift(rel);            // mais recente em cima
+  salvarRelatorios(lista);
+}
+
+function formatDataHora(iso) {
+  return new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+}
+
+const listaRelatoriosEl = document.getElementById("listaRelatorios");
+
+function renderRelatorios() {
+  if (!listaRelatoriosEl) return;
+
+  const lista = carregarRelatorios();
+  listaRelatoriosEl.innerHTML = "";
+
+  if (lista.length === 0) {
+    const vazio = document.createElement("div");
+    vazio.className = "card";
+    vazio.textContent = "Ainda não há relatórios gerados.";
+    listaRelatoriosEl.appendChild(vazio);
+    return;
+  }
+
+  lista.forEach((r) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const titulo = document.createElement("div");
+    titulo.style.fontWeight = "900";
+    titulo.textContent = r.titulo || "Relatório";
+
+    const sub = document.createElement("div");
+    sub.style.marginTop = "6px";
+    sub.style.opacity = "0.85";
+    sub.textContent = `${r.origem} • ${formatDataHora(r.criadoEm)}`;
+
+    const total = document.createElement("div");
+    total.style.marginTop = "10px";
+    total.style.fontWeight = "900";
+    total.style.color = "#0d5884";
+    total.textContent = "Total: " + formatBRL(r.total || 0);
+
+    const ver = document.createElement("div");
+    ver.className = "edit";
+    ver.textContent = "👁 Ver detalhes";
+    ver.addEventListener("click", () => {
+      alert(
+        `${r.titulo}\n\n` +
+        `Período: ${r.periodo || "-"}\n` +
+        `Total: ${formatBRL(r.total || 0)}\n\n` +
+        `${r.detalhes || ""}`
+      );
+    });
+
+    card.appendChild(titulo);
+    card.appendChild(sub);
+    card.appendChild(total);
+    card.appendChild(ver);
+
+    listaRelatoriosEl.appendChild(card);
+  });
+}
+  
+  const btnRelEntradasMensal = document.getElementById("btnRelEntradasMensal");
+  const btnRelSaidasMensal = document.getElementById("btnRelSaidasMensal");
+
+function mesAnoAtual() {
+  const d = new Date();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const aa = d.getFullYear();
+  return `${mm}/${aa}`;
+}
+
+// Entradas CNPJ (mensal) — usa seus “mes + valor” (ex: Janeiro/2026) como lançamento
+btnRelEntradasMensal?.addEventListener("click", () => {
+  const periodo = prompt("Qual período? (ex: 02/2026)", mesAnoAtual());
+  if (!periodo) return;
+
+  // soma tudo (não dá pra filtrar por mês com segurança, porque seu modelo é texto “Janeiro/2026”)
+  const total = (entradasMensais || []).reduce((acc, it) => acc + (Number(it.valor) || 0), 0);
+
+  adicionarRelatorio({
+    id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    origem: "Admin",
+    tipo: "ENTRADAS_CNPJ_MENSAL",
+    titulo: `Entradas (CNPJ) — ${periodo}`,
+    periodo,
+    total,
+    detalhes: `Total geral das entradas cadastradas: ${formatBRL(total)}`,
+    criadoEm: new Date().toISOString()
+  });
+
+  renderRelatorios();
+  alert("Relatório salvo em Relatórios ✅");
+});
+
+// Saídas (mensal) — filtra pelo mês atual baseado em criadoEm
+btnRelSaidasMensal?.addEventListener("click", () => {
+  const periodo = prompt("Qual período? (ex: 02/2026)", mesAnoAtual());
+  if (!periodo) return;
+
+  const [mmStr, aaStr] = periodo.split("/");
+  const mm = parseInt(mmStr, 10) - 1;
+  const aa = parseInt(aaStr, 10);
+
+  const total = (saidas || []).reduce((acc, it) => {
+    if (!it.criadoEm) return acc;
+    const d = new Date(it.criadoEm);
+    if (d.getMonth() === mm && d.getFullYear() === aa) return acc + (Number(it.valor) || 0);
+    return acc;
+  }, 0);
+
+  adicionarRelatorio({
+    id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    origem: "Admin",
+    tipo: "SAIDAS_MENSAL",
+    titulo: `Saídas — ${periodo}`,
+    periodo,
+    total,
+    detalhes: `Total do mês em Saídas: ${formatBRL(total)}`,
+    criadoEm: new Date().toISOString()
+  });
+
+  renderRelatorios();
+  alert("Relatório salvo em Relatórios ✅");
+});
+  
   /* ===== INICIAL ===== */
 
   carregarClientes();
   renderEntradas();
   renderSaidas();
+  renderRelatorios();
 });
