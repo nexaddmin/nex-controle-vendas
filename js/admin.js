@@ -180,9 +180,9 @@ function renderEntradas() {
 
     /*  == NAVEGAÇÃO ==  */
 function esconderTudo() {
-  clientesSection.classList.add("hidden");
-  entradasSection.classList.add("hidden");
-  saidasSection.classList.add("hidden");
+  if (clientesSection) clientesSection.classList.add("hidden");
+  if (entradasSection) entradasSection.classList.add("hidden");
+  if (saidasSection) saidasSection.classList.add("hidden");
 }
 
 // Mostrar Entradas
