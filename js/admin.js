@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
 
 function formatBRL(n) {
   return Number(n || 0).toLocaleString("pt-BR", {
@@ -422,23 +422,19 @@ function renderRelatorios() {
     card.appendChild(ver);
 
 // BOTÃO DELETAR (vermelho circular)
-  const btnDelete = document.createElement("button");
-  btnDelete.innerHTML = "🗑";
-  btnDelete.className = "relatorio-delete-btn";
+const btnDelete = document.createElement("button");
+btnDelete.innerHTML = "🗑";
+btnDelete.className = "relatorio-delete-btn";
 
-  btnDelete.addEventListener("click", (e) => {
-    e.stopPropagation(); // evita conflito com botão "ver detalhes"
+btnDelete.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation(); // evita conflito com "Ver detalhes"
 
-    if (!confirm("Excluir este relatório?")) return;
+  if (!confirm("Excluir este relatório?")) return;
 
-    const atual = carregarRelatorios();
-    const novaLista = atual.filter(item => item.id !== r.id);
-    salvarRelatorios(novaLista);
-    renderRelatorios();
-});
+  const atual = carregarRelatorios();
+  const novaLista = atual.filter((item) => item.id !== r.id);
 
-  card.appendChild(btnDelete);
-    
   salvarRelatorios(novaLista);
   renderRelatorios();
 });
@@ -499,7 +495,7 @@ btnRelSaidasMensal?.addEventListener("click", () => {
   }, 0);
 
   adicionarRelatorio({
-    id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + "-" + Math.random().toString(16).slice(2)),
     origem: "Admin",
     tipo: "SAIDAS_MENSAL",
     titulo: `Saídas — ${periodo}`,
