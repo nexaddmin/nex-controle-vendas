@@ -72,6 +72,15 @@ div.addEventListener("click", () => {
 function renderEntradas() {
   listaEntradasMensais.innerHTML = "";
 
+  const totalEl = document.getElementById("totalEntradasCNPJ");
+  const totalGeral = entradasMensais.reduce((acc, it) => acc + (Number(it.valor) || 0), 0);
+   if (totalEl) {
+    totalEl.textContent = "Total: " + totalGeral.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+  }
+  
   entradasMensais.forEach((item, index) => {
 
     const card = document.createElement("div");
