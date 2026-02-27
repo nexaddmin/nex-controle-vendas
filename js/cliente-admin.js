@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const nome = nomeParam.toLowerCase().trim();
   const nomeBonito = nome.charAt(0).toUpperCase() + nome.slice(1);
 
+  // Botões do cliente-admin.html
+const btnRelatorioMensal = document.getElementById("btnRelatorioMensal");
+const btnRelatorioSemanal = document.getElementById("btnRelatorioSemanal");
+  
   // ✅ Topo
   const nomeTopoEl = document.getElementById("nomeClienteTopo");
   if (nomeTopoEl) nomeTopoEl.textContent = nomeBonito;
@@ -50,7 +54,24 @@ document.addEventListener("DOMContentLoaded", () => {
   function formatBRL(n) {
     return Number(n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   }
+  
+/* ===== RELATÓRIOS (salva pro Admin também) ===== */
+   const REL_KEY = "relatoriosNex";
 
+  function carregarRelatorios() {
+    return JSON.parse(localStorage.getItem(REL_KEY)) || [];
+  }
+
+  function salvarRelatorios(lista) {
+    localStorage.setItem(REL_KEY, JSON.stringify(lista));
+  }
+
+  function adicionarRelatorio(rel) {
+    const lista = carregarRelatorios();
+    lista.unshift(rel); // mais recente em cima
+    salvarRelatorios(lista);
+  }
+  
   function render() {
     lista.innerHTML = "";
 
@@ -141,6 +162,106 @@ const novaForma = opcoes[idx];
     });
   }
 
+  /* ===== GERAR RELATÓRIOS DO CLIENTE ===== */
+
+// Função auxiliar
+function formatDia(d) {
+  return d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" });
+}
+
+// Semana Domingo -> Sábado
+function inicioDaSemanaDomingo(data) {
+  const d = new Date(data);
+  d.setHours(0, 0, 0, 0);
+  const dow = d.getDay(); // 0 = domingo
+  d.setDate(d.getDate() - dow);
+  return d;
+}
+
+function fimDaSemanaSabado(data) {
+  const ini = inicioDaSemanaDomingo(data);
+  const fim = new Date(ini);
+  fim.setDate(ini.getDate() + 6);
+  fim.setHours(23, 59, 59, 999);
+  return fim;
+}
+
+// 🔹 RELATÓRIO SEMANAL
+btnRelatorioSemanal?.addEventListener("click", () => {
+  const hoje = new Date();
+  const ini = inicioDaSemanaDomingo(hoje);
+  const fim = fimDaSemanaSabado(hoje);
+
+  let totalSemana = 0;
+  let detalhes = "";
+
+  for (let i = 0; i < 7; i++) {
+    const dia = new Date(ini);
+    dia.setDate(ini.getDate() + i);
+
+    const totalDia = lancamentos.reduce((acc, it) => {
+      if (!it.criadoEm) return acc;
+      const d = new Date(it.criadoEm);
+      if (
+        d.getFullYear() === dia.getFullYear() &&
+        d.getMonth() === dia.getMonth() &&
+        d.getDate() === dia.getDate()
+      ) {
+        return acc + (Number(it.valor) || 0) * (Number(it.qtd) || 1);
+      }
+      return acc;
+    }, 0);
+
+    totalSemana += totalDia;
+    detalhes += `${formatDia(dia)}: ${formatBRL(totalDia)}\n`;
+  }
+
+  adicionarRelatorio({
+    id: Date.now().toString(),
+    origem: `Cliente (${nomeBonito})`,
+    tipo: "CLIENTE_SEMANAL",
+    titulo: `Relatório semanal — ${nomeBonito}`,
+    periodo: `${ini.toLocaleDateString("pt-BR")} a ${fim.toLocaleDateString("pt-BR")}`,
+    total: totalSemana,
+    detalhes,
+    criadoEm: new Date().toISOString()
+  });
+
+  alert("Relatório semanal salvo ✅");
+});
+
+// 🔹 RELATÓRIO MENSAL
+btnRelatorioMensal?.addEventListener("click", () => {
+  const hoje = new Date();
+  const mes = hoje.getMonth();
+  const ano = hoje.getFullYear();
+
+  let totalMes = 0;
+
+  lancamentos.forEach(it => {
+    if (!it.criadoEm) return;
+    const d = new Date(it.criadoEm);
+    if (d.getMonth() === mes && d.getFullYear() === ano) {
+      totalMes += (Number(it.valor) || 0) * (Number(it.qtd) || 1);
+    }
+  });
+
+  const mm = String(mes + 1).padStart(2, "0");
+
+  adicionarRelatorio({
+    id: Date.now().toString(),
+    origem: `Cliente (${nomeBonito})`,
+    tipo: "CLIENTE_MENSAL",
+    titulo: `Relatório mensal — ${nomeBonito}`,
+    periodo: `${mm}/${ano}`,
+    total: totalMes,
+    detalhes: `Total do mês: ${formatBRL(totalMes)}`,
+    criadoEm: new Date().toISOString()
+  });
+
+  alert("Relatório mensal salvo ✅");
+});
+  
   render();
 });
 
