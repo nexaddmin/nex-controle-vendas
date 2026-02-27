@@ -421,29 +421,23 @@ function renderRelatorios() {
     card.appendChild(total);
     card.appendChild(ver);
 
-    // BOTÃO DELETAR
-  const btnDelete = document.createElement("div");
-  btnDelete.textContent = "🗑";
-  btnDelete.style.position = "absolute";
-  btnDelete.style.top = "10px";
-  btnDelete.style.right = "12px";
-  btnDelete.style.cursor = "pointer";
-  btnDelete.style.fontSize = "16px";
-  btnDelete.style.opacity = "0.6";
+// BOTÃO DELETAR (vermelho circular)
+  const btnDelete = document.createElement("button");
+  btnDelete.innerHTML = "🗑";
+  btnDelete.className = "relatorio-delete-btn";
 
-  btnDelete.addEventListener("mouseenter", () => {
-    btnDelete.style.opacity = "1";
-});
+  btnDelete.addEventListener("click", (e) => {
+    e.stopPropagation(); // evita conflito com botão "ver detalhes"
 
-  btnDelete.addEventListener("mouseleave", () => {
-    btnDelete.style.opacity = "0.6";
-});
-
-  btnDelete.addEventListener("click", () => {
     if (!confirm("Excluir este relatório?")) return;
 
     const atual = carregarRelatorios();
     const novaLista = atual.filter(item => item.id !== r.id);
+    salvarRelatorios(novaLista);
+    renderRelatorios();
+});
+
+  card.appendChild(btnDelete);
     
   salvarRelatorios(novaLista);
   renderRelatorios();
