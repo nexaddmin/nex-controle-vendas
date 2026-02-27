@@ -162,8 +162,6 @@ function renderEntradas() {
   }
 });
 
-  renderEntradas();
-
     /*  == NAVEGAÇÃO ==  */
 function esconderTudo() {
   clientesSection.classList.add("hidden");
@@ -198,19 +196,6 @@ let saidas = JSON.parse(localStorage.getItem("saidasEmpresa")) || [];
 
 function salvarSaidas() {
   localStorage.setItem("saidasEmpresa", JSON.stringify(saidas));
-}
-
-function parseValorBR(texto) {
-  const limpo = String(texto || "")
-    .trim()
-    .replace(/\./g, "")
-    .replace(",", ".");
-  const n = parseFloat(limpo);
-  return isNaN(n) ? null : n;
-}
-
-function formatBRL(n) {
-  return Number(n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 function renderSaidas() {
