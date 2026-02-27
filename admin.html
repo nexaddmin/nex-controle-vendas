@@ -130,7 +130,7 @@
   </aside>
 
   <!-- CONTEÚDO -->
-  <main>
+<main>
 
   <!-- CLIENTES (inicial) -->
   <section id="clientesSection">
@@ -139,32 +139,38 @@
   </section>
 
   <!-- ENTRADAS CNPJ -->
-  <div class="top-bar">
-  <div>
-    <h2>Minhas entradas (CNPJ)</h2>
-    <div class="total-mini" id="totalEntradasCNPJ">Total: R$ 0,00</div>
-  </div>
+  <section id="entradasSection" class="hidden">
+    <div class="top-bar">
+      <div>
+        <h2>Minhas entradas (CNPJ)</h2>
+        <div class="total-mini" id="totalEntradasCNPJ">
+          Total: R$ 0,00
+        </div>
+      </div>
 
-  <button class="btn-add" id="btnAddMes">+</button>
-</div>
+      <button class="btn-add" id="btnAddMes">+</button>
+    </div>
 
     <div class="cards" id="listaEntradasMensais"></div>
   </section>
-    
-     <!-- SAÍDAS -->
-<div class="top-bar">
-  <div>
-    <h2>Minhas saídas (Empresa)</h2>
-    <div class="total-mini" id="totalSaidasMes">Total do mês: R$ 0,00</div>
-  </div>
 
-  <button class="btn-add" id="btnAddSaida">+</button>
-</div>
+  <!-- SAÍDAS -->
+  <section id="saidasSection" class="hidden">
+    <div class="top-bar">
+      <div>
+        <h2>Minhas saídas (Empresa)</h2>
+        <div class="total-mini" id="totalSaidasMes">
+          Total do mês: R$ 0,00
+        </div>
+      </div>
 
-  <div class="cards" id="listaSaidas"></div>
-</section>
-    
-  </main>
+      <button class="btn-add" id="btnAddSaida">+</button>
+    </div>
+
+    <div class="cards" id="listaSaidas"></div>
+  </section>
+
+</main>
 
   <script src="js/admin.js"></script>
 </body>
