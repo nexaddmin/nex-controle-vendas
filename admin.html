@@ -125,7 +125,7 @@
   <h1>Nex Admin</h1>
     <button class="menu-btn" id="btnClientes">👥 Clientes</button>
     <button class="menu-btn" id="btnEntradas">📥 Minhas entradas</button>
-    <button class="menu-btn">💸 Saídas</button>
+    <button class="menu-btn" id="btnSaidas">💸 Saídas</button>
     <button class="menu-btn">📊 Relatórios</button>
   </aside>
 
@@ -147,7 +147,17 @@
 
     <div class="cards" id="listaEntradasMensais"></div>
   </section>
+    
+     <!-- SAÍDAS -->
+  <section id="saidasSection" class="hidden">
+    <div class="top-bar">
+      <h2>Minhas saídas (Empresa)</h2>
+      <button class="btn-add" id="btnAddSaida">+</button>
+   </div>
 
+  <div class="cards" id="listaSaidas"></div>
+</section>
+    
   </main>
 
   <script src="js/admin.js"></script>
