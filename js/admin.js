@@ -68,7 +68,23 @@ div.addEventListener("click", () => {
   function salvarEntradas() {
     localStorage.setItem("entradasCNPJ", JSON.stringify(entradasMensais));
   }
+  
+  function parseValorBR(texto) {
+    const limpo = String(texto || "")
+      .trim()
+      .replace(/\./g, "")
+      .replace(",", ".");
+    const n = parseFloat(limpo);
+    return isNaN(n) ? null : n;
+  }
 
+  function formatBRL(n) {
+    return Number(n || 0).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+     });
+}
+  
 function renderEntradas() {
   listaEntradasMensais.innerHTML = "";
 
