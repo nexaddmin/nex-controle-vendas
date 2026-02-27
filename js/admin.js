@@ -45,6 +45,9 @@ function parseValorBR(texto) {
 
   const btnSaidas = document.getElementById("btnSaidas");
   const saidasSection = document.getElementById("saidasSection");
+
+  const btnRelatorios = document.getElementById("btnRelatorios");
+  const relatoriosSection = document.getElementById("relatoriosSection");
   
   /* ===== CLIENTES ===== */
   const listaClientes = document.getElementById("listaClientes");
@@ -183,6 +186,7 @@ function esconderTudo() {
   if (clientesSection) clientesSection.classList.add("hidden");
   if (entradasSection) entradasSection.classList.add("hidden");
   if (saidasSection) saidasSection.classList.add("hidden");
+  if (relatoriosSection) relatoriosSection.classList.add("hidden");
 }
 
 // Mostrar Entradas
@@ -202,7 +206,13 @@ btnSaidas.addEventListener("click", () => {
   esconderTudo();
   saidasSection.classList.remove("hidden");
 });
-
+// RELATÓRIO
+  btnRelatorios.addEventListener("click", () => {
+  esconderTudo();
+  relatoriosSection.classList.remove("hidden");
+  renderRelatorios(); // sempre atualiza a lista
+});
+  
       /* ===== SAÍDAS (EMPRESA) ===== */
 
 const btnAddSaida = document.getElementById("btnAddSaida");
