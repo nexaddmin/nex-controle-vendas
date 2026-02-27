@@ -217,6 +217,29 @@ function renderSaidas() {
   if (!listaSaidas) return;
   listaSaidas.innerHTML = "";
 
+  const totalMesEl = document.getElementById("totalSaidasMes");
+
+// mês atual (do dispositivo)
+const agora = new Date();
+const mesAtual = agora.getMonth();
+const anoAtual = agora.getFullYear();
+
+const totalDoMes = saidas.reduce((acc, it) => {
+  if (!it.criadoEm) return acc;
+  const d = new Date(it.criadoEm);
+  if (d.getMonth() === mesAtual && d.getFullYear() === anoAtual) {
+    return acc + (Number(it.valor) || 0);
+  }
+  return acc;
+}, 0);
+
+if (totalMesEl) {
+  totalMesEl.textContent = "Total do mês: " + totalDoMes.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
+}
+  
   saidas.forEach((item, index) => {
     const card = document.createElement("div");
     card.className = "card";
