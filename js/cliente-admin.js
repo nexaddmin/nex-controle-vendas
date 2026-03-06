@@ -1,17 +1,15 @@
 document.addEventListener("DOMContentLoaded", async function () {
-
   const {
-  data: { session },
-  error: sessionError
-} = await window.supabaseClient.auth.getSession();
+    data: { session },
+    error: sessionError
+  } = await window.supabaseClient.auth.getSession();
 
-if (sessionError || !session || !session.user) {
-  window.location.href = "index.html";
-  return;
-}
-
-const user = session.user;
+  if (sessionError || !session || !session.user) {
+    window.location.href = "index.html";
+    return;
   }
+
+  const user = session.user;
 
   const { data: profile, error: profileError } = await window.supabaseClient
     .from("profiles")
@@ -26,8 +24,6 @@ const user = session.user;
   }
 
   console.log("cliente-admin autorizado");
-
-  // resto do código da página fica aqui dentro
 
   // ✅ pega o cliente pela URL: cliente-admin.html?nome=Cinza
   const params = new URLSearchParams(window.location.search);
