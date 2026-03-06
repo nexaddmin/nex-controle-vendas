@@ -1,16 +1,27 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // ✅ DEBUG: se isso não aparecer, é cache / script não carregou
-  console.log("cliente-admin.js carregou ✅");
+document.addEventListener("DOMContentLoaded", async function () {
 
-  // 🔒 proteção admin (sessão)
-  const tipo = localStorage.getItem("tipoUsuario");
-  const usuario = localStorage.getItem("usuarioLogado");
+  const { data, error } = await window.supabaseClient.auth.getUser();
 
-  if (tipo !== "admin" || usuario !== "admin") {
-    alert("Acesso negado (não está logado como admin). Faça login novamente.");
+  if (error || !data.user) {
     window.location.href = "index.html";
     return;
   }
+
+  const { data: profile, error: profileError } = await window.supabaseClient
+    .from("profiles")
+    .select("role")
+    .eq("id", data.user.id)
+    .single();
+
+  if (profileError || !profile || profile.role !== "admin") {
+    alert("Acesso negado");
+    window.location.href = "index.html";
+    return;
+  }
+
+  console.log("cliente-admin autorizado");
+
+  // resto do código da página fica aqui dentro
 
   // ✅ pega o cliente pela URL: cliente-admin.html?nome=Cinza
   const params = new URLSearchParams(window.location.search);
