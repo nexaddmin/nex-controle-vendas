@@ -43,7 +43,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const nome = nomeParam.toLowerCase().trim();
   const nomeBonito = nome.charAt(0).toUpperCase() + nome.slice(1);
-
+  console.log("cliente aberto:", nome);
+  
   // Botões do cliente-admin.html
 const btnRelatorioMensal = document.getElementById("btnRelatorioMensal");
 const btnRelatorioSemanal = document.getElementById("btnRelatorioSemanal");
