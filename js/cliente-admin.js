@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   console.log("cliente-admin autorizado");
 
+    window.voltarAdmin = function () {
+    window.location.href = "admin.html";
+  };
+  
   // ✅ pega o cliente pela URL: cliente-admin.html?nome=Cinza
   const params = new URLSearchParams(window.location.search);
   const nomeParam = params.get("nome");
