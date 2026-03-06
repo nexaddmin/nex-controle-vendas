@@ -58,6 +58,13 @@ const btnRelatorioSemanal = document.getElementById("btnRelatorioSemanal");
   }
 
   // ✅ Dados
+const { data: entradasTeste, error: erroEntradas } =
+  await window.supabaseClient
+    .from("entradas_clientes")
+    .select("*");
+
+console.log("entradas do banco:", entradasTeste);
+  
   const STORAGE_KEY = "clientesEntradas";
   const todos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
   if (!todos[nome]) todos[nome] = [];
