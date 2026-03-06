@@ -1,19 +1,24 @@
 document.addEventListener("DOMContentLoaded", async function () {
 
-  const { data, error } = await window.supabaseClient.auth.getUser();
+  const {
+  data: { session },
+  error: sessionError
+} = await window.supabaseClient.auth.getSession();
 
-  if (error || !data.user) {
-    window.location.href = "index.html";
-    return;
-  }
+if (sessionError || !session || !session.user) {
+  window.location.href = "index.html";
+  return;
+}
 
-  const { data: profile } = await window.supabaseClient
-    .from("profiles")
-    .select("role")
-    .eq("id", data.user.id)
-    .single();
+const user = session.user;
 
-  if (!profile || profile.role !== "admin") {
+const { data: profile, error: profileError } = await window.supabaseClient
+  .from("profiles")
+  .select("role")
+  .eq("id", user.id)
+  .single();
+
+ if (profileError || !profile || profile.role !== "admin") {
     window.location.href = "index.html";
     return;
   }
@@ -53,30 +58,39 @@ btnLogout.addEventListener("click", async () => {
   /* ===== CLIENTES ===== */
   const listaClientes = document.getElementById("listaClientes");
 
-  const clientes = [
-    { nome: "Cinza" },
-    { nome: "Marrom" },
-    { nome: "Vermelho" },
-    { nome: "Verde" },
-    { nome: "Laranja" },
-    { nome: "Branco" }
-  ];
+  let clientes = [];
 
-  function carregarClientes() {
-    listaClientes.innerHTML = "";
+async function carregarClientes() {
+  if (!listaClientes) return;
 
-    clientes.forEach(cliente => {
-      const div = document.createElement("div");
-      div.className = "card";
-     div.textContent = cliente.nome;
+  listaClientes.innerHTML = "";
 
-div.addEventListener("click", () => {
-  window.location.href =
-    "cliente-admin.html?nome=" + encodeURIComponent(cliente.nome);
-});
-      listaClientes.appendChild(div);
-    });
+  const { data, error } = await window.supabaseClient
+    .from("clientes")
+    .select("id, nome_empresa, responsavel")
+    .order("nome_empresa", { ascending: true });
+
+  if (error) {
+    console.error("Erro ao carregar clientes:", error);
+    listaClientes.innerHTML = '<div class="card">Erro ao carregar clientes.</div>';
+    return;
   }
+
+  clientes = data || [];
+
+  clientes.forEach(cliente => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.textContent = cliente.nome_empresa;
+
+    div.addEventListener("click", () => {
+      window.location.href =
+        "cliente-admin.html?nome=" + encodeURIComponent(cliente.nome_empresa);
+    });
+
+    listaClientes.appendChild(div);
+  });
+}
 
   /* ===== ENTRADAS MENSAIS (CNPJ) ===== */
 
