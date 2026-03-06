@@ -24,7 +24,9 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   console.log("cliente-admin autorizado");
-
+  
+  console.log("entrou na página do cliente-admin");
+  
     window.voltarAdmin = function () {
     window.location.href = "admin.html";
   };
