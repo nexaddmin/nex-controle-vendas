@@ -1,29 +1,26 @@
-    document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async function () {
 
-function formatBRL(n) {
-  return Number(n || 0).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-  });
-}
+  const { data, error } = await window.supabaseClient.auth.getUser();
 
-function parseValorBR(texto) {
-  const limpo = String(texto || "")
-    .trim()
-    .replace(/\./g, "")
-    .replace(",", ".");
-  const n = parseFloat(limpo);
-  return isNaN(n) ? null : n;
-}
-  
-  const tipo = localStorage.getItem("tipoUsuario");
-  const usuario = localStorage.getItem("usuarioLogado");
-
-  // 🔒 PROTEÇÃO ADMIN
-  if (tipo !== "admin" || usuario !== "admin") {
+  if (error || !data.user) {
     window.location.href = "index.html";
     return;
   }
+
+  const { data: profile } = await window.supabaseClient
+    .from("profiles")
+    .select("role")
+    .eq("id", data.user.id)
+    .single();
+
+  if (!profile || profile.role !== "admin") {
+    window.location.href = "index.html";
+    return;
+  }
+
+  console.log("admin autorizado");
+
+});
 
   // 🔴 LOGOUT
   const btnLogout = document.getElementById("btnLogout");
