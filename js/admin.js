@@ -20,6 +20,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   console.log("admin autorizado");
 
+  function formatBRL(n) {
+  return Number(n || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
+}
+  
   // 🔴 LOGOUT
   const btnLogout = document.getElementById("btnLogout");
 
