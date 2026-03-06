@@ -44,6 +44,21 @@ document.addEventListener("DOMContentLoaded", async function () {
   const nome = nomeParam.toLowerCase().trim();
   const nomeBonito = nome.charAt(0).toUpperCase() + nome.slice(1);
   console.log("cliente aberto:", nome);
+
+  const { data: clienteAtual, error: clienteAtualError } = await window.supabaseClient
+  .from("clientes")
+  .select("id, nome_empresa")
+  .ilike("nome_empresa", nomeParam.trim())
+  .single();
+
+if (clienteAtualError || !clienteAtual) {
+  alert("Cliente não encontrado no banco.");
+  console.error("Erro ao buscar cliente:", clienteAtualError);
+  window.location.href = "admin.html";
+  return;
+}
+
+const clienteId = clienteAtual.id;
   
   // Botões do cliente-admin.html
 const btnRelatorioMensal = document.getElementById("btnRelatorioMensal");
@@ -61,22 +76,24 @@ const btnRelatorioSemanal = document.getElementById("btnRelatorioSemanal");
   }
 
   // ✅ Dados
-const { data: entradasTeste, error: erroEntradas } =
-  await window.supabaseClient
+let lancamentos = [];
+
+async function carregarLancamentos() {
+  const { data, error } = await window.supabaseClient
     .from("entradas_clientes")
-    .select("*");
+    .select("*")
+    .eq("cliente_id", clienteId)
+    .order("created_at", { ascending: false });
 
-console.log("entradas do banco:", entradasTeste);
-  
-  const STORAGE_KEY = "clientesEntradas";
-  const todos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-  if (!todos[nome]) todos[nome] = [];
-  let lancamentos = todos[nome];
-
-  function salvar() {
-    todos[nome] = lancamentos;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  if (error) {
+    console.error("Erro ao carregar lançamentos:", error);
+    alert("Erro ao carregar lançamentos do banco.");
+    lancamentos = [];
+    return;
   }
+
+  lancamentos = data || [];
+}
 
   function formatBRL(n) {
     return Number(n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -103,34 +120,35 @@ console.log("entradas do banco:", entradasTeste);
     lista.innerHTML = "";
 
     lancamentos.forEach((item, index) => {
-      const qtd = Number(item.qtd || 1);
+      const meta = item.observacoes ? JSON.parse(item.observacoes || "{}") : {};
+      const qtd = Number(meta.qtd || 1);
       const valor = Number(item.valor || 0);
       const total = valor * qtd;
 
 const card = document.createElement("div");
 card.className = "card";
 
-const dataTxt = item.criadoEm
-  ? new Date(item.criadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+const dataTxt = item.created_at
+  ? new Date(item.created_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
   : "";
-
+      
 card.innerHTML = `
   <div class="linha1">
-    <div class="desc">${item.desc || "(sem descrição)"}</div>
+    <div class="desc">${item.descricao || "(sem descrição)"}</div>
     <div class="total">${formatBRL(total)}</div>
   </div>
   <div class="detalhes">
     ${dataTxt ? `<span><strong>Data:</strong> ${dataTxt}</span>` : ""}
     <span><strong>Qtd:</strong> ${qtd}</span>
     <span><strong>Valor:</strong> ${formatBRL(valor)}</span>
-    <span><strong>Pagamento:</strong> ${item.formaPagamento || "-"}</span>
+    <span><strong>Pagamento:</strong> ${item.categoria || "-"}</span>
   </div>
 `;
       const editar = document.createElement("div");
       editar.className = "edit";
       editar.textContent = "✏️ Editar";
       editar.addEventListener("click", () => {
-        const novaDesc = prompt("Editar descrição:", item.desc || "");
+        const novaDesc = prompt("Editar descrição:", item.descricao || "");
         if (novaDesc === null) return;
 
         const novaQtdTxt = prompt("Editar quantidade:", String(qtd));
@@ -145,7 +163,7 @@ card.innerHTML = `
        const opcoes = ["Dinheiro", "Pix", "Débito", "Crédito", "Transferência"];
        const escolha = prompt(
     "Forma de pagamento:\n1) Dinheiro\n2) Pix\n3) Débito\n4) Crédito\n5) Transferência\n\nDigite 1 a 5:",
-    String((opcoes.indexOf(item.formaPagamento) + 1) || 1)
+    String((opcoes.indexOf(item.categoria) + 1) || 1)
   );
   if (escolha === null) return;
 
@@ -162,26 +180,47 @@ const novaForma = opcoes[idx];
           return;
         }
 
-      lancamentos[index] = {
-  ...item,
-  desc: novaDesc.trim(),
-  qtd: novaQtd,
-  valor: novoValor,
-  formaPagamento: novaForma
-};
-        salvar();
-        render();
-      });
+(async () => {
+  const { error } = await window.supabaseClient
+    .from("entradas_clientes")
+    .update({
+      descricao: novaDesc.trim(),
+      categoria: novaForma,
+      valor: novoValor,
+      observacoes: JSON.stringify({ qtd: novaQtd })
+    })
+    .eq("id", item.id);
+
+  if (error) {
+    console.error("Erro ao editar lançamento:", error);
+    alert("Erro ao editar lançamento.");
+    return;
+  }
+
+  await carregarLancamentos();
+  render();
+})();
 
       const deletar = document.createElement("div");
       deletar.className = "delete";
       deletar.textContent = "🗑 Deletar";
       deletar.addEventListener("click", () => {
         if (!confirm("Excluir lançamento?")) return;
-        lancamentos.splice(index, 1);
-        salvar();
-        render();
-      });
+(async () => {
+  const { error } = await window.supabaseClient
+    .from("entradas_clientes")
+    .delete()
+    .eq("id", item.id);
+
+  if (error) {
+    console.error("Erro ao excluir lançamento:", error);
+    alert("Erro ao excluir lançamento.");
+    return;
+  }
+
+  await carregarLancamentos();
+  render();
+})();
 
       card.appendChild(editar);
       card.appendChild(deletar);
@@ -289,7 +328,8 @@ btnRelatorioMensal?.addEventListener("click", () => {
   alert("Relatório mensal salvo ✅");
 });
   
-  render();
+  await carregarLancamentos();
+render();
 });
 
 function voltarAdmin() {
