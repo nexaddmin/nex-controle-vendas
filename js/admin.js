@@ -20,17 +20,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   console.log("admin autorizado");
 
-});
-
   // 🔴 LOGOUT
   const btnLogout = document.getElementById("btnLogout");
 
   if (btnLogout) {
-    btnLogout.addEventListener("click", () => {
-  localStorage.removeItem("tipoUsuario");
-  localStorage.removeItem("usuarioLogado");
+btnLogout.addEventListener("click", async () => {
+  await window.supabaseClient.auth.signOut();
   window.location.href = "index.html";
-    });
+});
   }
   
   /* ===== SEÇÕES ===== */
