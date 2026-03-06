@@ -1,16 +1,22 @@
 document.addEventListener("DOMContentLoaded", async function () {
 
-  const { data, error } = await window.supabaseClient.auth.getUser();
+  const {
+  data: { session },
+  error: sessionError
+} = await window.supabaseClient.auth.getSession();
 
-  if (error || !data.user) {
-    window.location.href = "index.html";
-    return;
+if (sessionError || !session || !session.user) {
+  window.location.href = "index.html";
+  return;
+}
+
+const user = session.user;
   }
 
   const { data: profile, error: profileError } = await window.supabaseClient
     .from("profiles")
     .select("role")
-    .eq("id", data.user.id)
+    .eq("id", user.id)
     .single();
 
   if (profileError || !profile || profile.role !== "admin") {
