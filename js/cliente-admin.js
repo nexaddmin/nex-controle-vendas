@@ -240,29 +240,34 @@ function render() {
 
         await carregarLancamentos();
         render();
+        atualizarTotaisTopo();
       })();
     });
 
-deletar.addEventListener("click", () => {
-  if (!confirm("Excluir lançamento?")) return;
+    const deletar = document.createElement("div");
+    deletar.className = "delete";
+    deletar.textContent = "🗑 Deletar";
 
-  (async () => {
-    const { error } = await window.supabaseClient
-      .from("entradas_clientes")
-      .delete()
-      .eq("id", item.id);
+    deletar.addEventListener("click", () => {
+      if (!confirm("Excluir lançamento?")) return;
 
-    if (error) {
-      console.error("Erro ao excluir lançamento:", error);
-      alert("Erro ao excluir lançamento.");
-      return;
-    }
+      (async () => {
+        const { error } = await window.supabaseClient
+          .from("entradas_clientes")
+          .delete()
+          .eq("id", item.id);
 
-    await carregarLancamentos();
-    render();
-    atualizarTotaisTopo();
-  })();
-});
+        if (error) {
+          console.error("Erro ao excluir lançamento:", error);
+          alert("Erro ao excluir lançamento.");
+          return;
+        }
+
+        await carregarLancamentos();
+        render();
+        atualizarTotaisTopo();
+      })();
+    });
 
     card.appendChild(editar);
     card.appendChild(deletar);
