@@ -102,39 +102,52 @@ async function carregarClientes() {
   });
 }
 
-  /* ===== ENTRADAS MENSAIS (CNPJ) ===== */
+ /* ===== ENTRADAS MENSAIS (CNPJ) ===== */
 
-  const btnAddMes = document.getElementById("btnAddMes");
-  const listaEntradasMensais = document.getElementById("listaEntradasMensais");
+const btnAddMes = document.getElementById("btnAddMes");
+const listaEntradasMensais = document.getElementById("listaEntradasMensais");
 
-  let entradasMensais = JSON.parse(localStorage.getItem("entradasCNPJ")) || [];
+let entradasMensais = [];
 
-  function salvarEntradas() {
-    localStorage.setItem("entradasCNPJ", JSON.stringify(entradasMensais));
+async function carregarEntradasCNPJ() {
+  const { data, error } = await window.supabaseClient
+    .from("entradas_cnpj")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Erro ao carregar entradas CNPJ:", error);
+    alert("Erro ao carregar entradas CNPJ.");
+    entradasMensais = [];
+    return;
   }
-  
+
+  entradasMensais = data || [];
+}
+
 function renderEntradas() {
+  if (!listaEntradasMensais) return;
   listaEntradasMensais.innerHTML = "";
 
   const totalEl = document.getElementById("totalEntradasCNPJ");
   const totalGeral = entradasMensais.reduce((acc, it) => acc + (Number(it.valor) || 0), 0);
-   if (totalEl) {
+
+  if (totalEl) {
     totalEl.textContent = "Total: " + totalGeral.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL"
     });
   }
-  
-  entradasMensais.forEach((item, index) => {
 
+  entradasMensais.forEach((item) => {
     const card = document.createElement("div");
     card.className = "card";
 
     const titulo = document.createElement("div");
-    titulo.textContent = item.mes;
+    titulo.textContent = item.descricao || "-";
 
     const valor = document.createElement("div");
-    valor.textContent = item.valor.toLocaleString("pt-BR", {
+    valor.textContent = Number(item.valor || 0).toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL"
     });
@@ -142,40 +155,65 @@ function renderEntradas() {
     const acoes = document.createElement("div");
     acoes.className = "acoes";
 
-    // ===== EDITAR =====
     const editar = document.createElement("div");
     editar.className = "edit";
     editar.textContent = "✏️ Editar";
 
     editar.addEventListener("click", () => {
-      const novoMes = prompt("Editar nome do mês:", item.mes);
-      const novoValor = prompt("Editar valor:", item.valor);
+      const novoMes = prompt("Editar nome do mês:", item.descricao || "");
+      const novoValorTxt = prompt("Editar valor:", String(item.valor).replace(".", ","));
 
-      if (novoMes !== null && novoValor !== null) {
-        entradasMensais[index] = {
-          mes: novoMes,
-          valor: parseFloat(
-            novoValor.replace(/\./g, '').replace(',', '.')
-          )
-        };
+      if (novoMes === null || novoValorTxt === null) return;
 
-        salvarEntradas();
-        renderEntradas();
+      const valorN = parseValorBR(novoValorTxt);
+      if (!novoMes.trim() || valorN === null) {
+        alert("Preencha corretamente.");
+        return;
       }
+
+      (async () => {
+        const { error } = await window.supabaseClient
+          .from("entradas_cnpj")
+          .update({
+            descricao: novoMes.trim(),
+            valor: valorN,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", item.id);
+
+        if (error) {
+          console.error("Erro ao editar entrada CNPJ:", error);
+          alert("Erro ao editar entrada CNPJ.");
+          return;
+        }
+
+        await carregarEntradasCNPJ();
+        renderEntradas();
+      })();
     });
 
-    // ===== DELETE =====
     const deletar = document.createElement("div");
     deletar.className = "delete";
     deletar.textContent = "🗑 Deletar";
 
     deletar.addEventListener("click", () => {
-      const confirmar = confirm("Tem certeza que deseja excluir?");
-      if (!confirmar) return;
+      if (!confirm("Tem certeza que deseja excluir?")) return;
 
-      entradasMensais.splice(index, 1);
-      salvarEntradas();
-      renderEntradas();
+      (async () => {
+        const { error } = await window.supabaseClient
+          .from("entradas_cnpj")
+          .delete()
+          .eq("id", item.id);
+
+        if (error) {
+          console.error("Erro ao excluir entrada CNPJ:", error);
+          alert("Erro ao excluir entrada CNPJ.");
+          return;
+        }
+
+        await carregarEntradasCNPJ();
+        renderEntradas();
+      })();
     });
 
     acoes.appendChild(editar);
@@ -188,23 +226,41 @@ function renderEntradas() {
     listaEntradasMensais.appendChild(card);
   });
 }
-    btnAddMes.addEventListener("click", () => {
 
+if (btnAddMes) {
+  btnAddMes.addEventListener("click", async () => {
     const mes = prompt("Nome do mês (Ex: Janeiro / 2026)");
-    const valor = prompt("Valor total do mês:");
+    const valorTxt = prompt("Valor total do mês:");
 
-  if (mes && valor) {
-    entradasMensais.push({
-      mes: mes,
-      valor: parseFloat(
-        valor.replace(/\./g, '').replace(',', '.')
-      )
-    });
+    if (mes === null || valorTxt === null) return;
 
-    salvarEntradas();
+    const valorN = parseValorBR(valorTxt);
+    if (!mes.trim() || valorN === null) {
+      alert("Preencha corretamente.");
+      return;
+    }
+
+    const { error } = await window.supabaseClient
+      .from("entradas_cnpj")
+      .insert([{
+        cliente_id: null,
+        data_lancamento: new Date().toISOString().slice(0, 10),
+        descricao: mes.trim(),
+        cnpj: null,
+        valor: valorN,
+        criado_por: user.id
+      }]);
+
+    if (error) {
+      console.error("Erro ao salvar entrada CNPJ:", error);
+      alert("Erro ao salvar entrada CNPJ.");
+      return;
+    }
+
+    await carregarEntradasCNPJ();
     renderEntradas();
-  }
-});
+  });
+}
 
     /*  == NAVEGAÇÃO ==  */
 function esconderTudo() {
@@ -586,9 +642,10 @@ btnRelSaidasMensal?.addEventListener("click", () => {
   
   /* ===== INICIAL ===== */
 
- await carregarClientes();
+await carregarClientes();
+await carregarEntradasCNPJ();
 renderEntradas();
- await carregarSaidas();
+await carregarSaidas();
 renderSaidas();
 renderRelatorios();
 });
