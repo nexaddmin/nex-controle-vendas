@@ -137,21 +137,33 @@ async function carregarLancamentos() {
 }
   
 /* ===== RELATÓRIOS (salva pro Admin também) ===== */
-   const REL_KEY = "relatoriosNex";
 
-  function carregarRelatorios() {
-    return JSON.parse(localStorage.getItem(REL_KEY)) || [];
+async function adicionarRelatorio(rel) {
+
+  const { error } = await window.supabaseClient
+    .from("relatorios_nex")
+    .insert([{
+      cliente_id: clienteId,
+      competencia: rel.periodo || null,
+      titulo: rel.titulo,
+      conteudo: {
+        origem: rel.origem,
+        tipo: rel.tipo,
+        periodo: rel.periodo,
+        total: rel.total,
+        detalhes: rel.detalhes
+      },
+      criado_por: user.id
+    }]);
+
+  if (error) {
+    console.error("Erro ao salvar relatório:", error);
+    alert("Erro ao salvar relatório.");
+    return false;
   }
 
-  function salvarRelatorios(lista) {
-    localStorage.setItem(REL_KEY, JSON.stringify(lista));
-  }
-
-  function adicionarRelatorio(rel) {
-    const lista = carregarRelatorios();
-    lista.unshift(rel); // mais recente em cima
-    salvarRelatorios(lista);
-  }
+  return true;
+}
   
 function render() {
   lista.innerHTML = "";
