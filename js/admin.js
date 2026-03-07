@@ -31,6 +31,16 @@ const { data: profile, error: profileError } = await window.supabaseClient
     currency: "BRL"
   });
 }
+
+  function parseValorBR(texto) {
+  const limpo = String(texto || "")
+    .trim()
+    .replace(/\./g, "")
+    .replace(",", ".");
+
+  const n = parseFloat(limpo);
+  return isNaN(n) ? null : n;
+}
   
   // 🔴 LOGOUT
   const btnLogout = document.getElementById("btnLogout");
