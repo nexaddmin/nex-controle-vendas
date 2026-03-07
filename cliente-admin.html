@@ -28,8 +28,12 @@
     <button class="admin-action admin-action-week" id="btnRelatorioSemanal">
       Gerar Relatório Semanal
     </button>
+  
+    <button id="btnExportarPDF" class="btn-secundario">
+       Exportar PDF
+    </button>
   </div>
-
+  
  <div class="admin-cliente-titulo" id="tituloCliente">
   <div>Lançamentos</div>
   <div id="nomeClienteTopo" class="admin-cliente-sub"></div>
@@ -41,10 +45,20 @@
 
 <main class="cliente-main">
   <div class="cards" id="listaAdminCliente"></div>
+  
+  <div id="areaRelatorioPDF">
+
+  <h2 id="nomeClienteTopo"></h2>
+
+  <div id="listaAdminCliente"></div>
+
+</div>
+  
 </main>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/cliente-admin.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>
