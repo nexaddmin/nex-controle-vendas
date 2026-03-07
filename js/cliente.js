@@ -1,23 +1,55 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const tipo = localStorage.getItem("tipoUsuario");
-  const nome = localStorage.getItem("usuarioLogado");
+document.addEventListener("DOMContentLoaded", async () => {
+  const {
+    data: { session },
+    error: sessionError
+  } = await window.supabaseClient.auth.getSession();
 
-  // 🔒 Proteção: só cliente entra
-  if (tipo !== "cliente" || !nome) {
+  if (sessionError || !session || !session.user) {
     window.location.href = "index.html";
     return;
   }
 
+  const user = session.user;
+
+  const { data: profile, error: profileError } = await window.supabaseClient
+    .from("profiles")
+    .select("id, nome, role")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError || !profile || profile.role !== "cliente") {
+    window.location.href = "index.html";
+    return;
+  }
+
+  const nome = (profile.nome || user.email || "Cliente").trim();
+
+  const { data: clienteAtual, error: clienteAtualError } = await window.supabaseClient
+    .from("clientes")
+    .select("id, nome_empresa, profile_id")
+    .eq("profile_id", user.id)
+    .single();
+
+  if (clienteAtualError || !clienteAtual) {
+    alert("Cadastro do cliente não encontrado.");
+    console.error("Erro ao buscar cliente:", clienteAtualError);
+    window.location.href = "index.html";
+    return;
+  }
+
+  const clienteId = clienteAtual.id;
+
   // Topo
   const nomeClienteEl = document.getElementById("nomeCliente");
-  nomeClienteEl.textContent = nome; // só o nome, como você pediu
+  if (nomeClienteEl) {
+  nomeClienteEl.textContent = profile.nome || clienteAtual.nome_empresa || nome;
+}
 
-  const btnLogout = document.getElementById("btnLogout");
- btnLogout.addEventListener("click", () => {
-  localStorage.removeItem("tipoUsuario");
-  localStorage.removeItem("usuarioLogado");
+ const btnLogout = document.getElementById("btnLogout");
+btnLogout.addEventListener("click", async () => {
+  await window.supabaseClient.auth.signOut();
   window.location.href = "index.html";
-  });
+});
 
   // Elementos do form
   const btnAddEntrada = document.getElementById("btnAddEntrada");
@@ -34,15 +66,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const lista = document.getElementById("listaEntradasCliente");
 
   // Storage: por cliente
-  const STORAGE_KEY = "clientesEntradas";
-  const todos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-  if (!todos[nome]) todos[nome] = [];
-  let lancamentos = todos[nome];
+let lancamentos = [];
 
-  function salvarTudo() {
-    todos[nome] = lancamentos;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+async function carregarLancamentos() {
+  const { data, error } = await window.supabaseClient
+    .from("entradas_clientes")
+    .select("*")
+    .eq("cliente_id", clienteId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Erro ao carregar lançamentos:", error);
+    alert("Erro ao carregar entradas.");
+    lancamentos = [];
+    return;
   }
+
+  lancamentos = data || [];
+}
 
   function parseValorBR(texto) {
     // aceita "3.500,10" ou "3500,10" ou "3500.10"
@@ -57,11 +98,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function formatBRL(n) {
     return Number(n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   }
-function podeEditar(criadoEm) {
-  if (!criadoEm) return true; // se for antigo sem data, deixa editar
+function podeEditar(createdAt) {
+  if (!createdAt) return true;
   const agora = Date.now();
-  const criado = new Date(criadoEm).getTime();
-  const limiteMs = 24 * 60 * 60 * 1000; // 24h
+  const criado = new Date(createdAt).getTime();
+  const limiteMs = 24 * 60 * 60 * 1000;
   return (agora - criado) <= limiteMs;
 }
   function abrirForm() {
@@ -84,9 +125,13 @@ function podeEditar(criadoEm) {
       const card = document.createElement("div");
       card.className = "card";
 
-      const totalLinha = (item.valor * item.qtd);
-const dataTxt = item.criadoEm
-  ? new Date(item.criadoEm).toLocaleString("pt-BR", {
+const meta = item.observacoes ? JSON.parse(item.observacoes || "{}") : {};
+const qtd = Number(meta.qtd || 1);
+const formaPagamento = item.categoria || "-";
+const totalLinha = Number(item.valor || 0) * qtd;
+
+const dataTxt = item.created_at
+  ? new Date(item.created_at).toLocaleString("pt-BR", {
       dateStyle: "short",
       timeStyle: "short"
     })
@@ -94,21 +139,19 @@ const dataTxt = item.criadoEm
       
       card.innerHTML = `
         <div class="linha1">
-          <div class="desc">${item.desc}</div>
-          <div class="total">${formatBRL(totalLinha)}</div>
-        </div>
-   <div class="detalhes">
-    <span><strong>Data:</strong> ${dataTxt}</span>
-    <span><strong>Qtd:</strong> ${item.qtd}</span>
-    <span><strong>Valor:</strong> ${formatBRL(item.valor)}</span>
-    <span><strong>Pagamento:</strong> ${item.formaPagamento || "-"}</span>
+<div class="desc">${item.descricao}</div>
+<div class="total">${formatBRL(totalLinha)}</div>
+...
+<span><strong>Qtd:</strong> ${qtd}</span>
+<span><strong>Valor:</strong> ${formatBRL(item.valor)}</span>
+<span><strong>Pagamento:</strong> ${formaPagamento}</span>
   </div>
       `;
 
 const editar = document.createElement("div");
 editar.className = "edit";
 
-if (!podeEditar(item.criadoEm)) {
+if (!podeEditar(item.created_at)) {
   editar.textContent = "⛔ Prazo expirado";
   editar.style.opacity = "0.5";
   editar.style.cursor = "not-allowed";
@@ -121,10 +164,10 @@ if (!podeEditar(item.criadoEm)) {
   editar.textContent = "✏️ Editar";
 
   editar.addEventListener("click", () => {
-    const novaDesc = prompt("Editar descrição:", item.desc);
+    const novaDesc = prompt("Editar descrição:", item.descricao);
     if (novaDesc === null) return;
 
-    const novaQtd = prompt("Editar quantidade:", String(item.qtd));
+    const novaQtd = prompt("Editar quantidade:", String(qtd));
     if (novaQtd === null) return;
 
     const novoValorTxt = prompt("Editar valor (R$):", String(item.valor).replace(".", ","));
@@ -133,7 +176,7 @@ if (!podeEditar(item.criadoEm)) {
     const opcoes = ["Dinheiro", "Pix", "Débito", "Crédito", "Transferência"];
     const escolha = prompt(
       "Forma de pagamento:\n1) Dinheiro\n2) Pix\n3) Débito\n4) Crédito\n5) Transferência\n\nDigite 1 a 5:",
-      String((opcoes.indexOf(item.formaPagamento) + 1) || 1)
+      String((opcoes.indexOf(formaPagamento) + 1) || 1)
     );
     if (escolha === null) return;
 
@@ -152,16 +195,25 @@ if (!podeEditar(item.criadoEm)) {
     }
 
     // mantém criadoEm (não reseta as 24h)
-    lancamentos[index] = {
-      ...item,
-      desc: novaDesc.trim(),
-      qtd: qtdN,
+  (async () => {
+  const { error } = await window.supabaseClient
+    .from("entradas_clientes")
+    .update({
+      descricao: novaDesc.trim(),
       valor: valorN,
-      formaPagamento: opcoes[idx]
-    };
+      categoria: opcoes[idx],
+      observacoes: JSON.stringify({ qtd: qtdN })
+    })
+    .eq("id", item.id);
 
-    salvarTudo();
-    render();
+  if (error) {
+    console.error("Erro ao editar lançamento:", error);
+    alert("Erro ao editar lançamento.");
+    return;
+  }
+
+  await carregarLancamentos();
+  render();
   });
 }
 
@@ -177,7 +229,7 @@ if (!podeEditar(item.criadoEm)) {
     fecharForm();
   });
 
-  btnSalvarEntrada.addEventListener("click", () => {
+  btnSalvarEntrada.addEventListener("click", async () => {
     const desc = descEntrada.value.trim();
     const qtd = parseInt(qtdEntrada.value, 10);
     const valor = parseValorBR(valorEntrada.value);
@@ -188,21 +240,31 @@ if (!podeEditar(item.criadoEm)) {
       return;
     }
 
-    const agora = new Date().toISOString(); // data/hora automática
+const { error } = await window.supabaseClient
+  .from("entradas_clientes")
+  .insert([{
+    cliente_id: clienteId,
+    data_lancamento: new Date().toISOString().slice(0, 10),
+    descricao: desc,
+    categoria: formaPagamento,
+    valor: valor,
+    observacoes: JSON.stringify({ qtd }),
+    criado_por: user.id
+  }]);
 
-lancamentos.unshift({          // joga o mais recente pra cima
-  desc,
-  qtd,
-  valor,
-  formaPagamento,
-  criadoEm: agora
-});                                
-    salvarTudo();
-    render();
-    fecharForm();
+if (error) {
+  console.error("Erro ao salvar entrada:", error);
+  alert("Erro ao salvar entrada.");
+  return;
+}
+
+await carregarLancamentos();
+render();
+fecharForm();
   });
 
   // Inicial
-  render();
-  fecharForm();
+ await carregarLancamentos();
+ render();
+ fecharForm();
 });
