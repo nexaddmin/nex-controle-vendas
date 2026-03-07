@@ -243,10 +243,6 @@ function render() {
       })();
     });
 
-    const deletar = document.createElement("div");
-    deletar.className = "delete";
-    deletar.textContent = "🗑 Deletar";
-
 deletar.addEventListener("click", () => {
   if (!confirm("Excluir lançamento?")) return;
 
@@ -266,6 +262,12 @@ deletar.addEventListener("click", () => {
     render();
     atualizarTotaisTopo();
   })();
+});
+
+    card.appendChild(editar);
+    card.appendChild(deletar);
+    lista.appendChild(card);
+  });
 }
 
   /* ===== GERAR RELATÓRIOS DO CLIENTE ===== */
