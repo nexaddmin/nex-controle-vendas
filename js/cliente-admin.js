@@ -247,30 +247,26 @@ function render() {
     deletar.className = "delete";
     deletar.textContent = "🗑 Deletar";
 
-    deletar.addEventListener("click", () => {
-      if (!confirm("Excluir lançamento?")) return;
+deletar.addEventListener("click", () => {
+  if (!confirm("Excluir lançamento?")) return;
 
-      (async () => {
-        const { error } = await window.supabaseClient
-          .from("entradas_clientes")
-          .delete()
-          .eq("id", item.id);
+  (async () => {
+    const { error } = await window.supabaseClient
+      .from("entradas_clientes")
+      .delete()
+      .eq("id", item.id);
 
-        if (error) {
-          console.error("Erro ao excluir lançamento:", error);
-          alert("Erro ao excluir lançamento.");
-          return;
-        }
+    if (error) {
+      console.error("Erro ao excluir lançamento:", error);
+      alert("Erro ao excluir lançamento.");
+      return;
+    }
 
-        await carregarLancamentos();
-        render();
-        atualizarTotaisTopo();
-    });
-
-    card.appendChild(editar);
-    card.appendChild(deletar);
-    lista.appendChild(card);
-  });
+    await carregarLancamentos();
+    render();
+    atualizarTotaisTopo();
+  })();
+});
 }
 
   /* ===== GERAR RELATÓRIOS DO CLIENTE ===== */
