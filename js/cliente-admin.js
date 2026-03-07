@@ -100,8 +100,8 @@ async function carregarLancamentos() {
   }
 
   function atualizarTotaisTopo() {
-  const totalMensalEl = document.getElementById("totalMensal");
-  const totalSemanalEl = document.getElementById("totalSemanal");
+  const totalMesEl = document.getElementById("totalMes");
+  const totalSemanaEl = document.getElementById("totalSemana");
 
   const hoje = new Date();
   const mesAtual = hoje.getMonth();
@@ -110,28 +110,30 @@ async function carregarLancamentos() {
   const inicioSemana = inicioDaSemanaDomingo(hoje);
   const fimSemana = fimDaSemanaSabado(hoje);
 
-  let totalMensal = 0;
-  let totalSemanal = 0;
+  let totalMes = 0;
+  let totalSemana = 0;
 
   lancamentos.forEach((it) => {
     if (!it.created_at) return;
 
     const d = new Date(it.created_at);
+
     const meta = it.observacoes ? JSON.parse(it.observacoes || "{}") : {};
     const qtd = Number(meta.qtd || 1);
+
     const total = (Number(it.valor) || 0) * qtd;
 
     if (d.getMonth() === mesAtual && d.getFullYear() === anoAtual) {
-      totalMensal += total;
+      totalMes += total;
     }
 
     if (d >= inicioSemana && d <= fimSemana) {
-      totalSemanal += total;
+      totalSemana += total;
     }
   });
 
-  if (totalMensalEl) totalMensalEl.textContent = formatBRL(totalMensal);
-  if (totalSemanalEl) totalSemanalEl.textContent = formatBRL(totalSemanal);
+  if (totalMesEl) totalMesEl.textContent = formatBRL(totalMes);
+  if (totalSemanaEl) totalSemanaEl.textContent = formatBRL(totalSemana);
 }
   
 /* ===== RELATÓRIOS (salva pro Admin também) ===== */
