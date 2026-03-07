@@ -197,6 +197,9 @@ if (!podeEditar(item.created_at)) {
     // mantém criadoEm (não reseta as 24h)
   (async () => {
   const { error } = await window.supabaseClient
+(async () => {
+
+  const { error } = await window.supabaseClient
     .from("entradas_clientes")
     .update({
       descricao: novaDesc.trim(),
@@ -214,7 +217,7 @@ if (!podeEditar(item.created_at)) {
 
   await carregarLancamentos();
   render();
-  });
+})();
 }
 
       card.appendChild(editar);
