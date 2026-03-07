@@ -116,120 +116,125 @@ async function carregarLancamentos() {
     salvarRelatorios(lista);
   }
   
-  function render() {
-    lista.innerHTML = "";
+function render() {
+  lista.innerHTML = "";
 
-    lancamentos.forEach((item, index) => {
-      const meta = item.observacoes ? JSON.parse(item.observacoes || "{}") : {};
-      const qtd = Number(meta.qtd || 1);
-      const valor = Number(item.valor || 0);
-      const total = valor * qtd;
+  lancamentos.forEach((item) => {
+    const meta = item.observacoes ? JSON.parse(item.observacoes || "{}") : {};
+    const qtd = Number(meta.qtd || 1);
+    const valor = Number(item.valor || 0);
+    const total = valor * qtd;
+    const formaPagamento = item.categoria || "-";
 
-const card = document.createElement("div");
-card.className = "card";
+    const card = document.createElement("div");
+    card.className = "card";
 
-const dataTxt = item.created_at
-  ? new Date(item.created_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
-  : "";
-      
-card.innerHTML = `
-  <div class="linha1">
-    <div class="desc">${item.descricao || "(sem descrição)"}</div>
-    <div class="total">${formatBRL(total)}</div>
-  </div>
-  <div class="detalhes">
-    ${dataTxt ? `<span><strong>Data:</strong> ${dataTxt}</span>` : ""}
-    <span><strong>Qtd:</strong> ${qtd}</span>
-    <span><strong>Valor:</strong> ${formatBRL(valor)}</span>
-    <span><strong>Pagamento:</strong> ${item.categoria || "-"}</span>
-  </div>
-`;
-      const editar = document.createElement("div");
-      editar.className = "edit";
-      editar.textContent = "✏️ Editar";
-      editar.addEventListener("click", () => {
-        const novaDesc = prompt("Editar descrição:", item.descricao || "");
-        if (novaDesc === null) return;
+    const dataTxt = item.created_at
+      ? new Date(item.created_at).toLocaleString("pt-BR", {
+          dateStyle: "short",
+          timeStyle: "short"
+        })
+      : "";
 
-        const novaQtdTxt = prompt("Editar quantidade:", String(qtd));
-        if (novaQtdTxt === null) return;
+    card.innerHTML = `
+      <div class="linha1">
+        <div class="desc">${item.descricao || "(sem descrição)"}</div>
+        <div class="total">${formatBRL(total)}</div>
+      </div>
+      <div class="detalhes">
+        ${dataTxt ? `<span><strong>Data:</strong> ${dataTxt}</span>` : ""}
+        <span><strong>Qtd:</strong> ${qtd}</span>
+        <span><strong>Valor:</strong> ${formatBRL(valor)}</span>
+        <span><strong>Pagamento:</strong> ${formaPagamento}</span>
+      </div>
+    `;
 
-        const novoValorTxt = prompt("Editar valor (ex: 35,90):", String(valor).replace(".", ","));
-        if (novoValorTxt === null) return;
+    const editar = document.createElement("div");
+    editar.className = "edit";
+    editar.textContent = "✏️ Editar";
 
-        const novaQtd = parseInt(novaQtdTxt, 10);
-        const novoValor = parseFloat(String(novoValorTxt).replace(/\./g, "").replace(",", "."));
-        
-       const opcoes = ["Dinheiro", "Pix", "Débito", "Crédito", "Transferência"];
-       const escolha = prompt(
-    "Forma de pagamento:\n1) Dinheiro\n2) Pix\n3) Débito\n4) Crédito\n5) Transferência\n\nDigite 1 a 5:",
-    String((opcoes.indexOf(item.categoria) + 1) || 1)
-  );
-  if (escolha === null) return;
+    editar.addEventListener("click", () => {
+      const novaDesc = prompt("Editar descrição:", item.descricao || "");
+      if (novaDesc === null) return;
+
+      const novaQtdTxt = prompt("Editar quantidade:", String(qtd));
+      if (novaQtdTxt === null) return;
+
+      const novoValorTxt = prompt("Editar valor (R$):", String(valor).replace(".", ","));
+      if (novoValorTxt === null) return;
+
+      const opcoes = ["Dinheiro", "Pix", "Débito", "Crédito", "Transferência"];
+      const escolha = prompt(
+        "Forma de pagamento:\n1) Dinheiro\n2) Pix\n3) Débito\n4) Crédito\n5) Transferência\n\nDigite 1 a 5:",
+        String((opcoes.indexOf(formaPagamento) + 1) || 1)
+      );
+      if (escolha === null) return;
 
       const idx = parseInt(escolha, 10) - 1;
-  if (idx < 0 || idx > 4) {
-    alert("Escolha inválida (digite 1 a 5).");
-  return;
-}
+      if (idx < 0 || idx > 4) {
+        alert("Escolha inválida (digite 1 a 5).");
+        return;
+      }
 
-const novaForma = opcoes[idx];
-        
-        if (!novaDesc.trim() || !novaQtd || novaQtd < 1 || isNaN(novoValor)) {
-          alert("Preencha corretamente: descrição, quantidade >= 1 e valor válido.");
+      const qtdN = parseInt(novaQtdTxt, 10);
+      const valorN = parseFloat(String(novoValorTxt).replace(/\./g, "").replace(",", "."));
+
+      if (!novaDesc.trim() || !qtdN || qtdN < 1 || isNaN(valorN)) {
+        alert("Preencha corretamente: descrição, quantidade >= 1 e valor válido.");
+        return;
+      }
+
+      (async () => {
+        const { error } = await window.supabaseClient
+          .from("entradas_clientes")
+          .update({
+            descricao: novaDesc.trim(),
+            valor: valorN,
+            categoria: opcoes[idx],
+            observacoes: JSON.stringify({ qtd: qtdN })
+          })
+          .eq("id", item.id);
+
+        if (error) {
+          console.error("Erro ao editar lançamento:", error);
+          alert("Erro ao editar lançamento.");
           return;
         }
 
-(async () => {
-  const { error } = await window.supabaseClient
-    .from("entradas_clientes")
-    .update({
-      descricao: novaDesc.trim(),
-      categoria: novaForma,
-      valor: novoValor,
-      observacoes: JSON.stringify({ qtd: novaQtd })
-    })
-    .eq("id", item.id);
-
-  if (error) {
-    console.error("Erro ao editar lançamento:", error);
-    alert("Erro ao editar lançamento.");
-    return;
-  }
-
-  await carregarLancamentos();
-  render();
-})();
-
-const deletar = document.createElement("div");
-deletar.className = "delete";
-deletar.textContent = "🗑 Deletar";
-
-deletar.addEventListener("click", () => {
-  if (!confirm("Excluir lançamento?")) return;
-
-  (async () => {
-    const { error } = await window.supabaseClient
-      .from("entradas_clientes")
-      .delete()
-      .eq("id", item.id);
-
-    if (error) {
-      console.error("Erro ao excluir lançamento:", error);
-      alert("Erro ao excluir lançamento.");
-      return;
-    }
-
-    await carregarLancamentos();
-    render();
-  })();
-});
-
-card.appendChild(editar);
-card.appendChild(deletar);
-lista.appendChild(card);
+        await carregarLancamentos();
+        render();
+      })();
     });
-  }
+
+    const deletar = document.createElement("div");
+    deletar.className = "delete";
+    deletar.textContent = "🗑 Deletar";
+
+    deletar.addEventListener("click", () => {
+      if (!confirm("Excluir lançamento?")) return;
+
+      (async () => {
+        const { error } = await window.supabaseClient
+          .from("entradas_clientes")
+          .delete()
+          .eq("id", item.id);
+
+        if (error) {
+          console.error("Erro ao excluir lançamento:", error);
+          alert("Erro ao excluir lançamento.");
+          return;
+        }
+
+        await carregarLancamentos();
+        render();
+      })();
+    });
+
+    card.appendChild(editar);
+    card.appendChild(deletar);
+    lista.appendChild(card);
+  });
+}
 
   /* ===== GERAR RELATÓRIOS DO CLIENTE ===== */
 
