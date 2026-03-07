@@ -194,34 +194,31 @@ if (!podeEditar(item.created_at)) {
       return;
     }
 
-    // mantém criadoEm (não reseta as 24h)
-  (async () => {
-  const { error } = await window.supabaseClient
-(async () => {
+    (async () => {
+      const { error } = await window.supabaseClient
+        .from("entradas_clientes")
+        .update({
+          descricao: novaDesc.trim(),
+          valor: valorN,
+          categoria: opcoes[idx],
+          observacoes: JSON.stringify({ qtd: qtdN })
+        })
+        .eq("id", item.id);
 
-  const { error } = await window.supabaseClient
-    .from("entradas_clientes")
-    .update({
-      descricao: novaDesc.trim(),
-      valor: valorN,
-      categoria: opcoes[idx],
-      observacoes: JSON.stringify({ qtd: qtdN })
-    })
-    .eq("id", item.id);
+      if (error) {
+        console.error("Erro ao editar lançamento:", error);
+        alert("Erro ao editar lançamento.");
+        return;
+      }
 
-  if (error) {
-    console.error("Erro ao editar lançamento:", error);
-    alert("Erro ao editar lançamento.");
-    return;
-  }
-
-  await carregarLancamentos();
-  render();
-})();
+      await carregarLancamentos();
+      render();
+    })();
+  });
 }
 
-      card.appendChild(editar);
-      lista.appendChild(card);
+   card.appendChild(editar);
+   lista.appendChild(card);
     });
   }
 
