@@ -44,16 +44,17 @@
 </header>
 
 <main class="cliente-main">
-  <div class="cards" id="listaAdminCliente"></div>
-  
+
   <div id="areaRelatorioPDF">
+    <div class="admin-cliente-titulo-pdf">
+      <h2>Lançamentos</h2>
+      <h3 id="nomeClienteTopo"></h3>
+      <p id="dataGeracaoPDF"></p>
+    </div>
 
-  <h2 id="nomeClienteTopo"></h2>
+    <div class="cards" id="listaAdminCliente"></div>
+  </div>
 
-  <div id="listaAdminCliente"></div>
-
-</div>
-  
 </main>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
