@@ -238,15 +238,27 @@ btnSaidas.addEventListener("click", () => {
   renderRelatorios(); // sempre atualiza a lista
 });
   
-      /* ===== SAÍDAS (EMPRESA) ===== */
+/* ===== SAÍDAS (EMPRESA) ===== */
 
 const btnAddSaida = document.getElementById("btnAddSaida");
 const listaSaidas = document.getElementById("listaSaidas");
 
-let saidas = JSON.parse(localStorage.getItem("saidasEmpresa")) || [];
+let saidas = [];
 
-function salvarSaidas() {
-  localStorage.setItem("saidasEmpresa", JSON.stringify(saidas));
+async function carregarSaidas() {
+  const { data, error } = await window.supabaseClient
+    .from("saidas_empresa")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Erro ao carregar saídas:", error);
+    alert("Erro ao carregar saídas.");
+    saidas = [];
+    return;
+  }
+
+  saidas = data || [];
 }
 
 function renderSaidas() {
@@ -255,34 +267,33 @@ function renderSaidas() {
 
   const totalMesEl = document.getElementById("totalSaidasMes");
 
-// mês atual (do dispositivo)
-const agora = new Date();
-const mesAtual = agora.getMonth();
-const anoAtual = agora.getFullYear();
+  const agora = new Date();
+  const mesAtual = agora.getMonth();
+  const anoAtual = agora.getFullYear();
 
-const totalDoMes = saidas.reduce((acc, it) => {
-  if (!it.criadoEm) return acc;
-  const d = new Date(it.criadoEm);
-  if (d.getMonth() === mesAtual && d.getFullYear() === anoAtual) {
-    return acc + (Number(it.valor) || 0);
+  const totalDoMes = saidas.reduce((acc, it) => {
+    if (!it.created_at) return acc;
+    const d = new Date(it.created_at);
+    if (d.getMonth() === mesAtual && d.getFullYear() === anoAtual) {
+      return acc + (Number(it.valor) || 0);
+    }
+    return acc;
+  }, 0);
+
+  if (totalMesEl) {
+    totalMesEl.textContent = "Total do mês: " + totalDoMes.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
   }
-  return acc;
-}, 0);
 
-if (totalMesEl) {
-  totalMesEl.textContent = "Total do mês: " + totalDoMes.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-  });
-}
-  
-  saidas.forEach((item, index) => {
+  saidas.forEach((item) => {
     const card = document.createElement("div");
     card.className = "card";
 
     const titulo = document.createElement("div");
     titulo.style.fontWeight = "900";
-    titulo.textContent = item.desc || "Saída";
+    titulo.textContent = item.descricao || "Saída";
 
     const valor = document.createElement("div");
     valor.style.marginTop = "6px";
@@ -294,8 +305,8 @@ if (totalMesEl) {
     data.style.marginTop = "8px";
     data.style.fontSize = "13px";
     data.style.opacity = "0.8";
-    data.textContent = item.criadoEm
-      ? new Date(item.criadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+    data.textContent = item.created_at
+      ? new Date(item.created_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
       : "";
 
     const acoes = document.createElement("div");
@@ -306,7 +317,7 @@ if (totalMesEl) {
     editar.textContent = "✏️ Editar";
 
     editar.addEventListener("click", () => {
-      const novaDesc = prompt("Editar descrição:", item.desc || "");
+      const novaDesc = prompt("Editar descrição:", item.descricao || "");
       if (novaDesc === null) return;
 
       const novoValorTxt = prompt("Editar valor (R$):", String(item.valor).replace(".", ","));
@@ -318,9 +329,25 @@ if (totalMesEl) {
         return;
       }
 
-      saidas[index] = { ...item, desc: novaDesc.trim(), valor: valorN };
-      salvarSaidas();
-      renderSaidas();
+      (async () => {
+        const { error } = await window.supabaseClient
+          .from("saidas_empresa")
+          .update({
+            descricao: novaDesc.trim(),
+            valor: valorN,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", item.id);
+
+        if (error) {
+          console.error("Erro ao editar saída:", error);
+          alert("Erro ao editar saída.");
+          return;
+        }
+
+        await carregarSaidas();
+        renderSaidas();
+      })();
     });
 
     const deletar = document.createElement("div");
@@ -329,9 +356,22 @@ if (totalMesEl) {
 
     deletar.addEventListener("click", () => {
       if (!confirm("Excluir saída?")) return;
-      saidas.splice(index, 1);
-      salvarSaidas();
-      renderSaidas();
+
+      (async () => {
+        const { error } = await window.supabaseClient
+          .from("saidas_empresa")
+          .delete()
+          .eq("id", item.id);
+
+        if (error) {
+          console.error("Erro ao excluir saída:", error);
+          alert("Erro ao excluir saída.");
+          return;
+        }
+
+        await carregarSaidas();
+        renderSaidas();
+      })();
     });
 
     acoes.appendChild(editar);
@@ -347,7 +387,7 @@ if (totalMesEl) {
 }
 
 if (btnAddSaida) {
-  btnAddSaida.addEventListener("click", () => {
+  btnAddSaida.addEventListener("click", async () => {
     const desc = prompt("Descrição da saída (ex: Internet, Fornecedor, Anúncios)");
     if (desc === null) return;
 
@@ -360,13 +400,23 @@ if (btnAddSaida) {
       return;
     }
 
-    saidas.unshift({
-      desc: desc.trim(),
-      valor: valorN,
-      criadoEm: new Date().toISOString()
-    });
+    const { error } = await window.supabaseClient
+      .from("saidas_empresa")
+      .insert([{
+        cliente_id: null,
+        data_lancamento: new Date().toISOString().slice(0, 10),
+        descricao: desc.trim(),
+        valor: valorN,
+        criado_por: user.id
+      }]);
 
-    salvarSaidas();
+    if (error) {
+      console.error("Erro ao salvar saída:", error);
+      alert("Erro ao salvar saída.");
+      return;
+    }
+
+    await carregarSaidas();
     renderSaidas();
   });
 }
