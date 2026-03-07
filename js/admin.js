@@ -288,10 +288,10 @@ btnSaidas.addEventListener("click", () => {
   saidasSection.classList.remove("hidden");
 });
 // RELATÓRIO
-  btnRelatorios.addEventListener("click", () => {
+btnRelatorios.addEventListener("click", async () => {
   esconderTudo();
   relatoriosSection.classList.remove("hidden");
-  renderRelatorios(); // sempre atualiza a lista
+  await renderRelatorios();
 });
   
 /* ===== SAÍDAS (EMPRESA) ===== */
@@ -477,37 +477,68 @@ if (btnAddSaida) {
   });
 }
   
-  /* ===== RELATÓRIOS (GERAL) ===== */
-
-const REL_KEY = "relatoriosNex";
-
-function carregarRelatorios() {
-  return JSON.parse(localStorage.getItem(REL_KEY)) || [];
-}
-
-function salvarRelatorios(lista) {
-  localStorage.setItem(REL_KEY, JSON.stringify(lista));
-}
-
-function adicionarRelatorio(rel) {
-  const lista = carregarRelatorios();
-  lista.unshift(rel);            // mais recente em cima
-  salvarRelatorios(lista);
-}
+/* ===== RELATÓRIOS (GERAL) ===== */
 
 function formatDataHora(iso) {
   return new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
 }
 
 const listaRelatoriosEl = document.getElementById("listaRelatorios");
+const btnRelEntradasMensal = document.getElementById("btnRelEntradasMensal");
+const btnRelSaidasMensal = document.getElementById("btnRelSaidasMensal");
 
-function renderRelatorios() {
+let relatorios = [];
+
+async function carregarRelatorios() {
+  const { data, error } = await window.supabaseClient
+    .from("relatorios_nex")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Erro ao carregar relatórios:", error);
+    alert("Erro ao carregar relatórios.");
+    relatorios = [];
+    return;
+  }
+
+  relatorios = data || [];
+}
+
+async function adicionarRelatorio(rel) {
+  const { error } = await window.supabaseClient
+    .from("relatorios_nex")
+    .insert([{
+      cliente_id: null,
+      competencia: rel.periodo || null,
+      titulo: rel.titulo,
+      conteudo: {
+        origem: rel.origem || "Admin",
+        tipo: rel.tipo || "GERAL",
+        periodo: rel.periodo || "",
+        total: Number(rel.total || 0),
+        detalhes: rel.detalhes || ""
+      },
+      criado_por: user.id
+    }]);
+
+  if (error) {
+    console.error("Erro ao salvar relatório:", error);
+    alert("Erro ao salvar relatório.");
+    return false;
+  }
+
+  await carregarRelatorios();
+  return true;
+}
+
+async function renderRelatorios() {
   if (!listaRelatoriosEl) return;
 
-  const lista = carregarRelatorios();
+  await carregarRelatorios();
   listaRelatoriosEl.innerHTML = "";
 
-  if (lista.length === 0) {
+  if (relatorios.length === 0) {
     const vazio = document.createElement("div");
     vazio.className = "card";
     vazio.textContent = "Ainda não há relatórios gerados.";
@@ -515,10 +546,12 @@ function renderRelatorios() {
     return;
   }
 
-  lista.forEach((r) => {
+  relatorios.forEach((r) => {
+    const payload = r.conteudo || {};
+
     const card = document.createElement("div");
     card.className = "card";
-    card.style.position = "relative"; // necessário pro botão ficar no canto
+    card.style.position = "relative";
 
     const titulo = document.createElement("div");
     titulo.style.fontWeight = "900";
@@ -527,13 +560,13 @@ function renderRelatorios() {
     const sub = document.createElement("div");
     sub.style.marginTop = "6px";
     sub.style.opacity = "0.85";
-    sub.textContent = `${r.origem} • ${formatDataHora(r.criadoEm)}`;
+    sub.textContent = `${payload.origem || "Admin"} • ${formatDataHora(r.created_at)}`;
 
     const total = document.createElement("div");
     total.style.marginTop = "10px";
     total.style.fontWeight = "900";
     total.style.color = "#0d5884";
-    total.textContent = "Total: " + formatBRL(r.total || 0);
+    total.textContent = "Total: " + formatBRL(payload.total || 0);
 
     const ver = document.createElement("div");
     ver.className = "edit";
@@ -541,9 +574,9 @@ function renderRelatorios() {
     ver.addEventListener("click", () => {
       alert(
         `${r.titulo}\n\n` +
-        `Período: ${r.periodo || "-"}\n` +
-        `Total: ${formatBRL(r.total || 0)}\n\n` +
-        `${r.detalhes || ""}`
+        `Período: ${payload.periodo || "-"}\n` +
+        `Total: ${formatBRL(payload.total || 0)}\n\n` +
+        `${payload.detalhes || ""}`
       );
     });
 
@@ -552,32 +585,34 @@ function renderRelatorios() {
     card.appendChild(total);
     card.appendChild(ver);
 
-// BOTÃO DELETAR (vermelho circular)
-const btnDelete = document.createElement("button");
-btnDelete.innerHTML = "🗑";
-btnDelete.className = "relatorio-delete-btn";
+    const btnDelete = document.createElement("button");
+    btnDelete.innerHTML = "🗑";
+    btnDelete.className = "relatorio-delete-btn";
 
-btnDelete.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation(); // evita conflito com "Ver detalhes"
+    btnDelete.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-  if (!confirm("Excluir este relatório?")) return;
+      if (!confirm("Excluir este relatório?")) return;
 
-  const atual = carregarRelatorios();
-  const novaLista = atual.filter((item) => item.id !== r.id);
+      const { error } = await window.supabaseClient
+        .from("relatorios_nex")
+        .delete()
+        .eq("id", r.id);
 
-  salvarRelatorios(novaLista);
-  renderRelatorios();
-});
+      if (error) {
+        console.error("Erro ao excluir relatório:", error);
+        alert("Erro ao excluir relatório.");
+        return;
+      }
 
-card.appendChild(btnDelete);
+      await renderRelatorios();
+    });
 
+    card.appendChild(btnDelete);
     listaRelatoriosEl.appendChild(card);
   });
 }
-  
-  const btnRelEntradasMensal = document.getElementById("btnRelEntradasMensal");
-  const btnRelSaidasMensal = document.getElementById("btnRelSaidasMensal");
 
 function mesAnoAtual() {
   const d = new Date();
@@ -586,31 +621,28 @@ function mesAnoAtual() {
   return `${mm}/${aa}`;
 }
 
-// Entradas CNPJ (mensal) — usa seus “mes + valor” (ex: Janeiro/2026) como lançamento
-btnRelEntradasMensal?.addEventListener("click", () => {
+btnRelEntradasMensal?.addEventListener("click", async () => {
   const periodo = prompt("Qual período? (ex: 02/2026)", mesAnoAtual());
   if (!periodo) return;
 
-  // soma tudo (não dá pra filtrar por mês com segurança, porque seu modelo é texto “Janeiro/2026”)
   const total = (entradasMensais || []).reduce((acc, it) => acc + (Number(it.valor) || 0), 0);
 
-  adicionarRelatorio({
-    id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()),
+  const ok = await adicionarRelatorio({
     origem: "Admin",
     tipo: "ENTRADAS_CNPJ_MENSAL",
     titulo: `Entradas (CNPJ) — ${periodo}`,
     periodo,
     total,
-    detalhes: `Total geral das entradas cadastradas: ${formatBRL(total)}`,
-    criadoEm: new Date().toISOString()
+    detalhes: `Total geral das entradas cadastradas: ${formatBRL(total)}`
   });
 
-  renderRelatorios();
+  if (!ok) return;
+
+  await renderRelatorios();
   alert("Relatório salvo em Relatórios ✅");
 });
 
-// Saídas (mensal) — filtra pelo mês atual baseado em criadoEm
-btnRelSaidasMensal?.addEventListener("click", () => {
+btnRelSaidasMensal?.addEventListener("click", async () => {
   const periodo = prompt("Qual período? (ex: 02/2026)", mesAnoAtual());
   if (!periodo) return;
 
@@ -619,24 +651,24 @@ btnRelSaidasMensal?.addEventListener("click", () => {
   const aa = parseInt(aaStr, 10);
 
   const total = (saidas || []).reduce((acc, it) => {
-    if (!it.criadoEm) return acc;
-    const d = new Date(it.criadoEm);
+    if (!it.created_at) return acc;
+    const d = new Date(it.created_at);
     if (d.getMonth() === mm && d.getFullYear() === aa) return acc + (Number(it.valor) || 0);
     return acc;
   }, 0);
 
-  adicionarRelatorio({
-    id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + "-" + Math.random().toString(16).slice(2)),
+  const ok = await adicionarRelatorio({
     origem: "Admin",
     tipo: "SAIDAS_MENSAL",
     titulo: `Saídas — ${periodo}`,
     periodo,
     total,
-    detalhes: `Total do mês em Saídas: ${formatBRL(total)}`,
-    criadoEm: new Date().toISOString()
+    detalhes: `Total do mês em Saídas: ${formatBRL(total)}`
   });
 
-  renderRelatorios();
+  if (!ok) return;
+
+  await renderRelatorios();
   alert("Relatório salvo em Relatórios ✅");
 });
   
