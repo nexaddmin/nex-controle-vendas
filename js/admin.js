@@ -679,5 +679,5 @@ await carregarEntradasCNPJ();
 renderEntradas();
 await carregarSaidas();
 renderSaidas();
-renderRelatorios();
+await renderRelatorios();
 });
