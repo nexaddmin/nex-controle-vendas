@@ -201,30 +201,33 @@ const novaForma = opcoes[idx];
   render();
 })();
 
-      const deletar = document.createElement("div");
-      deletar.className = "delete";
-      deletar.textContent = "🗑 Deletar";
-      deletar.addEventListener("click", () => {
-        if (!confirm("Excluir lançamento?")) return;
-(async () => {
-  const { error } = await window.supabaseClient
-    .from("entradas_clientes")
-    .delete()
-    .eq("id", item.id);
+const deletar = document.createElement("div");
+deletar.className = "delete";
+deletar.textContent = "🗑 Deletar";
 
-  if (error) {
-    console.error("Erro ao excluir lançamento:", error);
-    alert("Erro ao excluir lançamento.");
-    return;
-  }
+deletar.addEventListener("click", () => {
+  if (!confirm("Excluir lançamento?")) return;
 
-  await carregarLancamentos();
-  render();
-})();
+  (async () => {
+    const { error } = await window.supabaseClient
+      .from("entradas_clientes")
+      .delete()
+      .eq("id", item.id);
 
-      card.appendChild(editar);
-      card.appendChild(deletar);
-      lista.appendChild(card);
+    if (error) {
+      console.error("Erro ao excluir lançamento:", error);
+      alert("Erro ao excluir lançamento.");
+      return;
+    }
+
+    await carregarLancamentos();
+    render();
+  })();
+});
+
+card.appendChild(editar);
+card.appendChild(deletar);
+lista.appendChild(card);
     });
   }
 
