@@ -312,7 +312,7 @@ function fimDaSemanaSabado(data) {
 }
 
 // 🔹 RELATÓRIO SEMANAL
-btnRelatorioSemanal?.addEventListener("click", () => {
+btnRelatorioSemanal?.addEventListener("click", async () => {
   const hoje = new Date();
   const ini = inicioDaSemanaDomingo(hoje);
   const fim = fimDaSemanaSabado(hoje);
@@ -346,7 +346,7 @@ btnRelatorioSemanal?.addEventListener("click", () => {
     detalhes += `${formatDia(dia)}: ${formatBRL(totalDia)}\n`;
   }
 
-  adicionarRelatorio({
+ await adicionarRelatorio({
     id: Date.now().toString(),
     origem: `Cliente (${nomeBonito})`,
     tipo: "CLIENTE_SEMANAL",
@@ -361,7 +361,7 @@ btnRelatorioSemanal?.addEventListener("click", () => {
 });
 
 // 🔹 RELATÓRIO MENSAL
-btnRelatorioMensal?.addEventListener("click", () => {
+btnRelatorioMensal?.addEventListener("click", async () => {
   const hoje = new Date();
   const mes = hoje.getMonth();
   const ano = hoje.getFullYear();
@@ -382,9 +382,11 @@ btnRelatorioMensal?.addEventListener("click", () => {
 
   const mm = String(mes + 1).padStart(2, "0");
 
-  adicionarRelatorio({
+  await adicionarRelatorio({
     id: Date.now().toString(),
-    origem: `Cliente (${nomeBonito})`,
+    origem: `Cliente (${nomeBonito}
+    
+    )`,
     tipo: "CLIENTE_MENSAL",
     titulo: `Relatório mensal — ${nomeBonito}`,
     periodo: `${mm}/${ano}`,
