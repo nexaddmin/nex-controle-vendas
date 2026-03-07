@@ -274,17 +274,22 @@ btnRelatorioSemanal?.addEventListener("click", () => {
     dia.setDate(ini.getDate() + i);
 
     const totalDia = lancamentos.reduce((acc, it) => {
-      if (!it.criadoEm) return acc;
-      const d = new Date(it.criadoEm);
-      if (
-        d.getFullYear() === dia.getFullYear() &&
-        d.getMonth() === dia.getMonth() &&
-        d.getDate() === dia.getDate()
-      ) {
-        return acc + (Number(it.valor) || 0) * (Number(it.qtd) || 1);
-      }
-      return acc;
-    }, 0);
+  if (!it.created_at) return acc;
+
+  const d = new Date(it.created_at);
+  const meta = it.observacoes ? JSON.parse(it.observacoes || "{}") : {};
+  const qtd = Number(meta.qtd || 1);
+
+  if (
+    d.getFullYear() === dia.getFullYear() &&
+    d.getMonth() === dia.getMonth() &&
+    d.getDate() === dia.getDate()
+  ) {
+    return acc + (Number(it.valor) || 0) * qtd;
+  }
+
+  return acc;
+}, 0);
 
     totalSemana += totalDia;
     detalhes += `${formatDia(dia)}: ${formatBRL(totalDia)}\n`;
@@ -312,13 +317,17 @@ btnRelatorioMensal?.addEventListener("click", () => {
 
   let totalMes = 0;
 
-  lancamentos.forEach(it => {
-    if (!it.criadoEm) return;
-    const d = new Date(it.criadoEm);
-    if (d.getMonth() === mes && d.getFullYear() === ano) {
-      totalMes += (Number(it.valor) || 0) * (Number(it.qtd) || 1);
-    }
-  });
+ lancamentos.forEach(it => {
+  if (!it.created_at) return;
+
+  const d = new Date(it.created_at);
+  const meta = it.observacoes ? JSON.parse(it.observacoes || "{}") : {};
+  const qtd = Number(meta.qtd || 1);
+
+  if (d.getMonth() === mes && d.getFullYear() === ano) {
+    totalMes += (Number(it.valor) || 0) * qtd;
+  }
+});
 
   const mm = String(mes + 1).padStart(2, "0");
 
