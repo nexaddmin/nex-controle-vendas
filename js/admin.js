@@ -586,8 +586,9 @@ btnRelSaidasMensal?.addEventListener("click", () => {
   
   /* ===== INICIAL ===== */
 
-  carregarClientes();
-  renderEntradas();
-  renderSaidas();
-  renderRelatorios();
+ await carregarClientes();
+renderEntradas();
+ await carregarSaidas();
+renderSaidas();
+renderRelatorios();
 });
