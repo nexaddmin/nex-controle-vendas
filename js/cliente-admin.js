@@ -98,6 +98,41 @@ async function carregarLancamentos() {
   function formatBRL(n) {
     return Number(n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   }
+
+  function atualizarTotaisTopo() {
+  const totalMensalEl = document.getElementById("totalMensal");
+  const totalSemanalEl = document.getElementById("totalSemanal");
+
+  const hoje = new Date();
+  const mesAtual = hoje.getMonth();
+  const anoAtual = hoje.getFullYear();
+
+  const inicioSemana = inicioDaSemanaDomingo(hoje);
+  const fimSemana = fimDaSemanaSabado(hoje);
+
+  let totalMensal = 0;
+  let totalSemanal = 0;
+
+  lancamentos.forEach((it) => {
+    if (!it.created_at) return;
+
+    const d = new Date(it.created_at);
+    const meta = it.observacoes ? JSON.parse(it.observacoes || "{}") : {};
+    const qtd = Number(meta.qtd || 1);
+    const total = (Number(it.valor) || 0) * qtd;
+
+    if (d.getMonth() === mesAtual && d.getFullYear() === anoAtual) {
+      totalMensal += total;
+    }
+
+    if (d >= inicioSemana && d <= fimSemana) {
+      totalSemanal += total;
+    }
+  });
+
+  if (totalMensalEl) totalMensalEl.textContent = formatBRL(totalMensal);
+  if (totalSemanalEl) totalSemanalEl.textContent = formatBRL(totalSemanal);
+}
   
 /* ===== RELATÓRIOS (salva pro Admin também) ===== */
    const REL_KEY = "relatoriosNex";
@@ -227,7 +262,7 @@ function render() {
 
         await carregarLancamentos();
         render();
-      })();
+        atualizarTotaisTopo();
     });
 
     card.appendChild(editar);
@@ -345,8 +380,9 @@ btnRelatorioMensal?.addEventListener("click", () => {
   alert("Relatório mensal salvo ✅");
 });
   
-  await carregarLancamentos();
+await carregarLancamentos();
 render();
+atualizarTotaisTopo();
 });
 
 function voltarAdmin() {
