@@ -266,7 +266,6 @@ deletar.addEventListener("click", () => {
     render();
     atualizarTotaisTopo();
   })();
-});
 }
 
   /* ===== GERAR RELATÓRIOS DO CLIENTE ===== */
