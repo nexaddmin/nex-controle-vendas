@@ -56,6 +56,10 @@ btnLogout.addEventListener("click", async () => {
   const clientesSection = document.getElementById("clientesSection");
   const entradasSection = document.getElementById("entradasSection");
 
+  const saidasClientesSection = document.getElementById("saidasClientesSection");
+  const btnSaidasClientes = document.getElementById("btnSaidasClientes");
+  const listaSaidasClientes = document.getElementById("listaSaidasClientes");
+
   const btnEntradas = document.getElementById("btnEntradas");
   const btnClientes = document.getElementById("btnClientes");
 
@@ -265,6 +269,7 @@ if (btnAddMes) {
     /*  == NAVEGAÇÃO ==  */
 function esconderTudo() {
   if (clientesSection) clientesSection.classList.add("hidden");
+  if (saidasClientesSection) saidasClientesSection.classList.add("hidden");
   if (entradasSection) entradasSection.classList.add("hidden");
   if (saidasSection) saidasSection.classList.add("hidden");
   if (relatoriosSection) relatoriosSection.classList.add("hidden");
