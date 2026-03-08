@@ -400,11 +400,7 @@ btnRelatorioMensal?.addEventListener("click", async () => {
 
 const btnExportarPDF = document.getElementById("btnExportarPDF");
 
-function agruparPorDataNoMesAtual(lista) {
-  const hoje = new Date();
-  const mes = hoje.getMonth();
-  const ano = hoje.getFullYear();
-
+function agruparPorPeriodo(lista, mesSelecionado, anoSelecionado) {
   const agrupado = {};
   let totalMes = 0;
   let totalRegistros = 0;
@@ -413,7 +409,7 @@ function agruparPorDataNoMesAtual(lista) {
     if (!item.created_at) return;
 
     const d = new Date(item.created_at);
-    if (d.getMonth() !== mes || d.getFullYear() !== ano) return;
+    if (d.getMonth() !== mesSelecionado || d.getFullYear() !== anoSelecionado) return;
 
     const meta = item.observacoes ? JSON.parse(item.observacoes || "{}") : {};
     const qtd = Number(meta.qtd || 1);
@@ -422,10 +418,15 @@ function agruparPorDataNoMesAtual(lista) {
     const chave = d.toLocaleDateString("pt-BR");
 
     if (!agrupado[chave]) {
-      agrupado[chave] = 0;
+      agrupado[chave] = {
+        total: 0,
+        registros: 0
+      };
     }
 
-    agrupado[chave] += total;
+    agrupado[chave].total += total;
+    agrupado[chave].registros += 1;
+
     totalMes += total;
     totalRegistros += 1;
   });
@@ -434,24 +435,45 @@ function agruparPorDataNoMesAtual(lista) {
 }
 
 btnExportarPDF?.addEventListener("click", () => {
-  const { agrupado, totalMes, totalRegistros } = agruparPorDataNoMesAtual(lancamentos);
-
   const hoje = new Date();
-  const periodo = hoje.toLocaleDateString("pt-BR", { month: "2-digit", year: "numeric" });
-  const geradoEm = hoje.toLocaleString("pt-BR");
+  const sugestao = hoje.toLocaleDateString("pt-BR", { month: "2-digit", year: "numeric" });
 
-  const linhas = Object.entries(agrupado)
+  const periodoEscolhido = prompt("Qual mês deseja exportar? (MM/AAAA)", sugestao);
+  if (!periodoEscolhido) return;
+
+  const [mesStr, anoStr] = periodoEscolhido.split("/");
+  const mesSelecionado = parseInt(mesStr, 10) - 1;
+  const anoSelecionado = parseInt(anoStr, 10);
+
+  if (isNaN(mesSelecionado) || isNaN(anoSelecionado) || mesSelecionado < 0 || mesSelecionado > 11) {
+    alert("Período inválido. Use o formato MM/AAAA.");
+    return;
+  }
+
+  const { agrupado, totalMes, totalRegistros } = agruparPorPeriodo(
+    lancamentos,
+    mesSelecionado,
+    anoSelecionado
+  );
+
+  const geradoEm = hoje.toLocaleString("pt-BR");
+  const periodo = periodoEscolhido;
+
+    const linhas = Object.entries(agrupado)
     .sort((a, b) => {
       const [da, ma, aa] = a[0].split("/");
       const [db, mb, ab] = b[0].split("/");
       return new Date(`${aa}-${ma}-${da}`) - new Date(`${ab}-${mb}-${db}`);
     })
-    .map(([data, total]) => {
+    .map(([data, info]) => {
       return `
         <tr>
           <td style="padding:10px; border:1px solid #dbe5ef;">${data}</td>
+          <td style="padding:10px; border:1px solid #dbe5ef; text-align:center;">
+            ${info.registros}
+          </td>
           <td style="padding:10px; border:1px solid #dbe5ef; text-align:right;">
-            ${formatBRL(total)}
+            ${formatBRL(info.total)}
           </td>
         </tr>
       `;
@@ -489,11 +511,12 @@ btnExportarPDF?.addEventListener("click", () => {
 
       <table style="width:100%; border-collapse:collapse; font-size:14px;">
         <thead>
-          <tr style="background:#eef4f8;">
-            <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Data</th>
-            <th style="padding:10px; border:1px solid #dbe5ef; text-align:right;">Total</th>
-          </tr>
-        </thead>
+    <tr style="background:#eef4f8;">
+      <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Data</th>
+      <th style="padding:10px; border:1px solid #dbe5ef; text-align:center;">Registros</th>
+      <th style="padding:10px; border:1px solid #dbe5ef; text-align:right;">Total</th>
+    </tr>
+  </thead>
         <tbody>
           ${linhas || `
             <tr>
