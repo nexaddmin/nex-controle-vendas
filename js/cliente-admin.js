@@ -398,30 +398,127 @@ btnRelatorioMensal?.addEventListener("click", async () => {
   alert("Relatório mensal salvo ✅");
 });
 
-  const btnExportarPDF = document.getElementById("btnExportarPDF");
+const btnExportarPDF = document.getElementById("btnExportarPDF");
+
+function agruparPorDataNoMesAtual(lista) {
+  const hoje = new Date();
+  const mes = hoje.getMonth();
+  const ano = hoje.getFullYear();
+
+  const agrupado = {};
+  let totalMes = 0;
+  let totalRegistros = 0;
+
+  lista.forEach((item) => {
+    if (!item.created_at) return;
+
+    const d = new Date(item.created_at);
+    if (d.getMonth() !== mes || d.getFullYear() !== ano) return;
+
+    const meta = item.observacoes ? JSON.parse(item.observacoes || "{}") : {};
+    const qtd = Number(meta.qtd || 1);
+    const total = (Number(item.valor) || 0) * qtd;
+
+    const chave = d.toLocaleDateString("pt-BR");
+
+    if (!agrupado[chave]) {
+      agrupado[chave] = 0;
+    }
+
+    agrupado[chave] += total;
+    totalMes += total;
+    totalRegistros += 1;
+  });
+
+  return { agrupado, totalMes, totalRegistros };
+}
 
 btnExportarPDF?.addEventListener("click", () => {
-  const area = document.getElementById("areaRelatorioPDF");
-  const dataGeracao = document.getElementById("dataGeracaoPDF");
+  const { agrupado, totalMes, totalRegistros } = agruparPorDataNoMesAtual(lancamentos);
 
-  if (dataGeracao) {
-    dataGeracao.textContent =
-      "Gerado em: " +
-      new Date().toLocaleString("pt-BR", {
-        dateStyle: "short",
-        timeStyle: "short"
-      });
-  }
+  const hoje = new Date();
+  const periodo = hoje.toLocaleDateString("pt-BR", { month: "2-digit", year: "numeric" });
+  const geradoEm = hoje.toLocaleString("pt-BR");
+
+  const linhas = Object.entries(agrupado)
+    .sort((a, b) => {
+      const [da, ma, aa] = a[0].split("/");
+      const [db, mb, ab] = b[0].split("/");
+      return new Date(`${aa}-${ma}-${da}`) - new Date(`${ab}-${mb}-${db}`);
+    })
+    .map(([data, total]) => {
+      return `
+        <tr>
+          <td style="padding:10px; border:1px solid #dbe5ef;">${data}</td>
+          <td style="padding:10px; border:1px solid #dbe5ef; text-align:right;">
+            ${formatBRL(total)}
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color:#163247; padding:24px;">
+      <div style="border-bottom:2px solid #0d5884; padding-bottom:12px; margin-bottom:20px;">
+        <h1 style="margin:0; font-size:24px;">Nex Admin Financeiro</h1>
+        <div style="margin-top:8px; font-size:14px; color:#4b6477;">
+          Relatório mensal de entradas
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px; line-height:1.8; font-size:14px;">
+        <div><strong>Cliente/Empresa:</strong> ${nomeBonito}</div>
+        <div><strong>Período:</strong> ${periodo}</div>
+        <div><strong>Gerado em:</strong> ${geradoEm}</div>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-bottom:24px;">
+        <div style="flex:1; background:#f4f8fb; padding:14px; border-radius:10px; border:1px solid #dbe5ef;">
+          <div style="font-size:12px; color:#5d7383;">Total de registros</div>
+          <div style="font-size:22px; font-weight:700; margin-top:6px;">${totalRegistros}</div>
+        </div>
+
+        <div style="flex:1; background:#f4f8fb; padding:14px; border-radius:10px; border:1px solid #dbe5ef;">
+          <div style="font-size:12px; color:#5d7383;">Total no mês</div>
+          <div style="font-size:22px; font-weight:700; margin-top:6px;">${formatBRL(totalMes)}</div>
+        </div>
+      </div>
+
+      <h2 style="font-size:16px; margin-bottom:12px;">Total de valor por data</h2>
+
+      <table style="width:100%; border-collapse:collapse; font-size:14px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Data</th>
+            <th style="padding:10px; border:1px solid #dbe5ef; text-align:right;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${linhas || `
+            <tr>
+              <td colspan="2" style="padding:12px; border:1px solid #dbe5ef; text-align:center;">
+                Nenhum lançamento encontrado no mês atual.
+              </td>
+            </tr>
+          `}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  const container = document.createElement("div");
+  container.innerHTML = html;
 
   const opt = {
-    margin: 10,
-    filename: `relatorio-${nomeBonito}.pdf`,
+    margin: 8,
+    filename: `relatorio-mensal-${nomeBonito}.pdf`,
     image: { type: "jpeg", quality: 0.98 },
     html2canvas: { scale: 2 },
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
   };
 
-  html2pdf().set(opt).from(area).save();
+  html2pdf().set(opt).from(container).save();
 });
   
 await carregarLancamentos();
