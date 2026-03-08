@@ -82,7 +82,22 @@ async function carregarLancamentos() {
     return;
   }
 
-  lancamentos = data || [];
+  const todos = data || [];
+
+  const hoje = new Date();
+  const mesAtual = hoje.getMonth();
+  const anoAtual = hoje.getFullYear();
+
+  lancamentos = todos.filter((item) => {
+    if (!item.created_at) return false;
+
+    const criado = new Date(item.created_at);
+
+    return (
+      criado.getMonth() === mesAtual &&
+      criado.getFullYear() === anoAtual
+    );
+  });
 }
 
   function parseValorBR(texto) {
