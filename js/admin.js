@@ -299,6 +299,13 @@ btnRelatorios.addEventListener("click", async () => {
   await renderRelatorios();
 });
   
+// SAIDAS CLIENTES
+  btnSaidasClientes?.addEventListener("click", () => {
+  esconderTudo();
+  saidasClientesSection.classList.remove("hidden");
+  carregarListaSaidasClientes();
+});
+  
 /* ===== SAÍDAS (EMPRESA) ===== */
 
 const btnAddSaida = document.getElementById("btnAddSaida");
@@ -676,6 +683,39 @@ btnRelSaidasMensal?.addEventListener("click", async () => {
   await renderRelatorios();
   alert("Relatório salvo em Relatórios ✅");
 });
+
+  /* ==== SAIDAS CLIENTES ==== */
+  async function carregarListaSaidasClientes() {
+  if (!listaSaidasClientes) return;
+
+  listaSaidasClientes.innerHTML = "";
+
+  const { data, error } = await window.supabaseClient
+    .from("clientes")
+    .select("id, nome_empresa")
+    .order("nome_empresa", { ascending: true });
+
+  if (error) {
+    console.error("Erro ao carregar clientes:", error);
+    listaSaidasClientes.innerHTML =
+      '<div class="card">Erro ao carregar clientes.</div>';
+    return;
+  }
+
+  (data || []).forEach((cliente) => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.textContent = cliente.nome_empresa;
+
+    div.addEventListener("click", () => {
+      window.location.href =
+        "cliente-saidas.html?nome=" +
+        encodeURIComponent(cliente.nome_empresa);
+    });
+
+    listaSaidasClientes.appendChild(div);
+  });
+}
   
   /* ===== INICIAL ===== */
 
