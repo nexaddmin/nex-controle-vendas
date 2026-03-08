@@ -311,9 +311,161 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-    await carregarSaidasCliente();
-    renderSaidasCliente();
+  // exportação pra pdf
+  const btnPdfSaidaSemanal = document.getElementById("btnPdfSaidaSemanal");
+const btnPdfSaidaMensal = document.getElementById("btnPdfSaidaMensal");
+
+function formatDataBR(dataIso) {
+  if (!dataIso) return "-";
+  return new Date(dataIso + "T12:00:00").toLocaleDateString("pt-BR");
+}
+
+function gerarHtmlRelatorioSaidas({ titulo, periodo, saidasFiltradas, totalGeral }) {
+  const geradoEm = new Date().toLocaleString("pt-BR");
+
+  const linhas = saidasFiltradas.map((item) => {
+    return `
+      <tr>
+        <td style="padding:10px; border:1px solid #dbe5ef;">${formatDataBR(item.data_lancamento)}</td>
+        <td style="padding:10px; border:1px solid #dbe5ef;">${item.descricao || "-"}</td>
+        <td style="padding:10px; border:1px solid #dbe5ef;">${item.categoria || "-"}</td>
+        <td style="padding:10px; border:1px solid #dbe5ef;">${item.forma_pagamento || "-"}</td>
+        <td style="padding:10px; border:1px solid #dbe5ef;">${item.status_comprovante || "-"}</td>
+        <td style="padding:10px; border:1px solid #dbe5ef; text-align:right;">${formatBRL(item.valor)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <div style="font-family: Arial, sans-serif; color:#163247; padding:24px;">
+      <div style="border-bottom:2px solid #0d5884; padding-bottom:12px; margin-bottom:20px;">
+        <h1 style="margin:0; font-size:24px;">Nex Admin Financeiro</h1>
+        <div style="margin-top:8px; font-size:14px; color:#4b6477;">
+          ${titulo}
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px; line-height:1.8; font-size:14px;">
+        <div><strong>Cliente/Empresa:</strong> ${clienteAtual.nome_empresa}</div>
+        <div><strong>Período:</strong> ${periodo}</div>
+        <div><strong>Gerado em:</strong> ${geradoEm}</div>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-bottom:24px;">
+        <div style="flex:1; background:#f4f8fb; padding:14px; border-radius:10px; border:1px solid #dbe5ef;">
+          <div style="font-size:12px; color:#5d7383;">Total de registros</div>
+          <div style="font-size:22px; font-weight:700; margin-top:6px;">${saidasFiltradas.length}</div>
+        </div>
+
+        <div style="flex:1; background:#f4f8fb; padding:14px; border-radius:10px; border:1px solid #dbe5ef;">
+          <div style="font-size:12px; color:#5d7383;">Total do período</div>
+          <div style="font-size:22px; font-weight:700; margin-top:6px;">${formatBRL(totalGeral)}</div>
+        </div>
+      </div>
+
+      <table style="width:100%; border-collapse:collapse; font-size:14px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Data</th>
+            <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Descrição</th>
+            <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Categoria</th>
+            <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Pagamento</th>
+            <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Status</th>
+            <th style="padding:10px; border:1px solid #dbe5ef; text-align:right;">Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${linhas || `
+            <tr>
+              <td colspan="6" style="padding:12px; border:1px solid #dbe5ef; text-align:center;">
+                Nenhuma saída encontrada no período.
+              </td>
+            </tr>
+          `}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function exportarPdfHtml(html, nomeArquivo) {
+  const container = document.createElement("div");
+  container.innerHTML = html;
+
+  const opt = {
+    margin: 8,
+    filename: nomeArquivo,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+  };
+
+  html2pdf().set(opt).from(container).save();
+}
+
+btnPdfSaidaMensal?.addEventListener("click", () => {
+  const hoje = new Date();
+  const sugestao = hoje.toLocaleDateString("pt-BR", { month: "2-digit", year: "numeric" });
+
+  const periodoEscolhido = prompt("Qual mês deseja exportar? (MM/AAAA)", sugestao);
+  if (!periodoEscolhido) return;
+
+  const [mesStr, anoStr] = periodoEscolhido.split("/");
+  const mes = parseInt(mesStr, 10) - 1;
+  const ano = parseInt(anoStr, 10);
+
+  if (isNaN(mes) || isNaN(ano) || mes < 0 || mes > 11) {
+    alert("Período inválido. Use MM/AAAA.");
+    return;
+  }
+
+  const saidasFiltradas = saidas.filter((item) => {
+    if (!item.data_lancamento) return false;
+    const d = new Date(item.data_lancamento + "T12:00:00");
+    return d.getMonth() === mes && d.getFullYear() === ano;
   });
+
+  const totalGeral = saidasFiltradas.reduce((acc, item) => acc + (Number(item.valor) || 0), 0);
+
+  const html = gerarHtmlRelatorioSaidas({
+    titulo: "Relatório mensal de saídas",
+    periodo: periodoEscolhido,
+    saidasFiltradas,
+    totalGeral
+  });
+
+  exportarPdfHtml(html, `saidas-mensal-${clienteAtual.nome_empresa}.pdf`);
+});
+
+btnPdfSaidaSemanal?.addEventListener("click", () => {
+  const hoje = new Date();
+  const inicio = new Date(hoje);
+  inicio.setDate(hoje.getDate() - hoje.getDay());
+  inicio.setHours(0, 0, 0, 0);
+
+  const fim = new Date(inicio);
+  fim.setDate(inicio.getDate() + 6);
+  fim.setHours(23, 59, 59, 999);
+
+  const saidasFiltradas = saidas.filter((item) => {
+    if (!item.data_lancamento) return false;
+    const d = new Date(item.data_lancamento + "T12:00:00");
+    return d >= inicio && d <= fim;
+  });
+
+  const totalGeral = saidasFiltradas.reduce((acc, item) => acc + (Number(item.valor) || 0), 0);
+
+  const periodo = `${inicio.toLocaleDateString("pt-BR")} a ${fim.toLocaleDateString("pt-BR")}`;
+
+  const html = gerarHtmlRelatorioSaidas({
+    titulo: "Relatório semanal de saídas",
+    periodo,
+    saidasFiltradas,
+    totalGeral
+  });
+
+  exportarPdfHtml(html, `saidas-semanal-${clienteAtual.nome_empresa}.pdf`);
+});
 
   await carregarSaidasCliente();
   renderSaidasCliente();
