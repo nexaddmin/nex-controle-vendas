@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Saídas do Cliente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="admin-cliente-header">
+  <div class="admin-top-left">
+    <button id="btnNovaSaidaCliente" class="admin-action admin-action-month">
+      Nova saída
+    </button>
+  </div>
+
+  <div class="admin-cliente-titulo">
+    <div>Saídas do Cliente</div>
+    <div id="nomeClienteTopo" class="admin-cliente-sub"></div>
+  </div>
+
+  <button class="btn-voltar" onclick="voltarAdmin()">← Voltar</button>
+</header>
+
+<main class="cliente-main">
+  <div class="cards" id="listaSaidasCliente"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/cliente-saidas.js"></script>
+</body>
+</html>
