@@ -397,6 +397,32 @@ btnRelatorioMensal?.addEventListener("click", async () => {
 
   alert("Relatório mensal salvo ✅");
 });
+
+  const btnExportarPDF = document.getElementById("btnExportarPDF");
+
+btnExportarPDF?.addEventListener("click", () => {
+  const area = document.getElementById("areaRelatorioPDF");
+  const dataGeracao = document.getElementById("dataGeracaoPDF");
+
+  if (dataGeracao) {
+    dataGeracao.textContent =
+      "Gerado em: " +
+      new Date().toLocaleString("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short"
+      });
+  }
+
+  const opt = {
+    margin: 10,
+    filename: `relatorio-${nomeBonito}.pdf`,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+  };
+
+  html2pdf().set(opt).from(area).save();
+});
   
 await carregarLancamentos();
 render();
