@@ -335,6 +335,7 @@ function gerarHtmlRelatorioSaidas({ titulo, periodo, saidasFiltradas, totalGeral
         <td style="padding:10px; border:1px solid #dbe5ef;">${item.categoria || "-"}</td>
         <td style="padding:10px; border:1px solid #dbe5ef;">${item.forma_pagamento || "-"}</td>
         <td style="padding:10px; border:1px solid #dbe5ef;">${item.status_comprovante || "-"}</td>
+        <td style="padding:10px; border:1px solid #dbe5ef;">${item.observacao || "-"}</td>
         <td style="padding:10px; border:1px solid #dbe5ef; text-align:right;">${formatBRL(item.valor)}</td>
       </tr>
     `;
@@ -375,13 +376,14 @@ function gerarHtmlRelatorioSaidas({ titulo, periodo, saidasFiltradas, totalGeral
             <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Categoria</th>
             <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Pagamento</th>
             <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Status</th>
+            <th style="padding:10px; border:1px solid #dbe5ef; text-align:left;">Observação</th>
             <th style="padding:10px; border:1px solid #dbe5ef; text-align:right;">Valor</th>
           </tr>
         </thead>
         <tbody>
           ${linhas || `
             <tr>
-              <td colspan="6" style="padding:12px; border:1px solid #dbe5ef; text-align:center;">
+              <td colspan="7" style="padding:12px; border:1px solid #dbe5ef; text-align:center;">
                 Nenhuma saída encontrada no período.
               </td>
             </tr>
