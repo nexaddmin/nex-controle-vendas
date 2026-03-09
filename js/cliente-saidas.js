@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   }
 
-  btnNovaSaidaCliente?.addEventListener("click", async () => {
+   btnNovaSaidaCliente?.addEventListener("click", async () => {
     const dataLanc = prompt("Data (AAAA-MM-DD):", new Date().toISOString().slice(0, 10));
     if (dataLanc === null) return;
 
@@ -311,9 +311,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
+    await carregarSaidasCliente();
+    renderSaidasCliente();
+  });
+    
   // exportação pra pdf
   const btnPdfSaidaSemanal = document.getElementById("btnPdfSaidaSemanal");
-const btnPdfSaidaMensal = document.getElementById("btnPdfSaidaMensal");
+  const btnPdfSaidaMensal = document.getElementById("btnPdfSaidaMensal");
 
 function formatDataBR(dataIso) {
   if (!dataIso) return "-";
