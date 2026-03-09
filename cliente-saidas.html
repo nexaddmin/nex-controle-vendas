@@ -10,15 +10,19 @@
 
 <header class="admin-cliente-header">
   <div class="admin-top-left">
-    <button id="btnNovaSaidaCliente" class="admin-action admin-action-month">
-      Nova saída
-    </button>
-  </div>
+<div class="admin-top-left">
+  <button id="btnNovaSaidaCliente" class="admin-action admin-action-month">
+    Nova saída
+  </button>
 
-  <div class="admin-cliente-titulo">
-    <div>Saídas do Cliente</div>
-    <div id="nomeClienteTopo" class="admin-cliente-sub"></div>
-  </div>
+  <button id="btnPdfSaidaSemanal" class="admin-action admin-action-week">
+    PDF Semanal
+  </button>
+
+  <button id="btnPdfSaidaMensal" class="admin-action admin-action-month">
+    PDF Mensal
+  </button>
+</div>
 
   <button class="btn-voltar" onclick="voltarAdmin()">← Voltar</button>
 </header>
@@ -28,6 +32,7 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="js/supabase.js"></script>
 <script src="js/cliente-saidas.js"></script>
 </body>
